@@ -1,0 +1,867 @@
+<title>Modul 10 Lernwerkstatt</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: Kopfzeile mit Tabs, darunter eine Sprechblase als Einstieg; Lernpfad als vertikale Linie mit Stationen, Quiz und Karten als schmale Arbeitsflächen */
+:root{
+  --bg:#F1F5F5; --surface:#FFFFFF; --ink:#12262A; --muted:#51666A; --line:#D3DDDE;
+  --accent:#0B6E6E; --accent-ink:#FFFFFF; --accent-soft:#DCEEEE;
+  --note-bg:#FFF3D6; --note-ink:#4F3500; --note-line:#E3B13A;
+  --good:#17744A; --good-soft:#DDF3E7; --bad:#B42318; --bad-soft:#FBE4E0;
+  --c-s1:#0B6E6E; --c-s2:#8A4B9C; --c-s3:#B15A0E; --c-s4:#2F62A8;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D191C; --surface:#14252A; --ink:#E5EEEF; --muted:#9BB0B3; --line:#27393D;
+  --accent:#4FC3C0; --accent-ink:#06201F; --accent-soft:#16393B;
+  --note-bg:#38300F; --note-ink:#F1E0B0; --note-line:#8A6A1B;
+  --good:#5BD08F; --good-soft:#14352A; --bad:#FF8F80; --bad-soft:#41201C;
+  --c-s1:#4FC3C0; --c-s2:#D9A3EA; --c-s3:#F0A862; --c-s4:#8DB7F0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D191C; --surface:#14252A; --ink:#E5EEEF; --muted:#9BB0B3; --line:#27393D;
+  --accent:#4FC3C0; --accent-ink:#06201F; --accent-soft:#16393B;
+  --note-bg:#38300F; --note-ink:#F1E0B0; --note-line:#8A6A1B;
+  --good:#5BD08F; --good-soft:#14352A; --bad:#FF8F80; --bad-soft:#41201C;
+  --c-s1:#4FC3C0; --c-s2:#D9A3EA; --c-s3:#F0A862; --c-s4:#8DB7F0; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:0 56px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+button,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* Kopf */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{padding-block:10px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;font-size:1.05rem;letter-spacing:.01em}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tab{border:0;background:transparent;padding:7px 16px;border-radius:999px;font-weight:600;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+
+/* Einstieg */
+.hero{padding-block:28px 8px}
+.bubble[hidden]{display:none}
+.bubble{background:var(--accent);color:var(--accent-ink);padding:26px 28px 28px;border-radius:28px 28px 28px 6px;position:relative}
+.bubble h1{font-size:clamp(1.7rem,5vw,2.6rem);font-weight:700}
+.bubble p{margin:10px 0 0;max-width:56ch;opacity:.92}
+.srcs{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.srcs span{background:rgba(255,255,255,.18);border-radius:999px;padding:3px 12px;font-size:.88rem;font-weight:600}
+:root[data-theme="dark"] .srcs span{background:rgba(0,0,0,.18)}
+.prog{margin-top:18px;display:grid;gap:8px}
+.prog-row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.95rem;color:var(--muted)}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+
+/* Lernpfad */
+.path{list-style:none;margin:22px 0 0;padding:0;position:relative}
+.path::before{content:"";position:absolute;left:19px;top:20px;bottom:20px;width:2px;background:var(--line)}
+.st{position:relative;padding-left:56px;margin-bottom:14px}
+.node{position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:var(--surface);border:2px solid var(--line);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;color:var(--muted)}
+.st.done .node{background:var(--good);border-color:var(--good);color:#fff}
+.st.next .node{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.st-head{width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:6px}
+.st.open .st-head{border-bottom-left-radius:0;border-bottom-right-radius:0;border-color:var(--accent)}
+.st-head h2{font-size:1.2rem}
+.st-head p{margin:0;color:var(--muted);font-size:.97rem}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 9px;border-radius:99px;border:1px solid currentColor}
+.chip.s4{color:var(--c-s4)}.chip.s1{color:var(--c-s1)}.chip.s2{color:var(--c-s2)}.chip.s3{color:var(--c-s3)}
+.chip.state{color:var(--muted)}
+.st-body{display:none;background:var(--surface);border:1px solid var(--accent);border-top:0;border-radius:0 0 14px 14px;padding:6px 18px 18px}
+.st.open .st-body{display:block}
+.blk{margin-top:18px}
+.blk>h3{font-size:1.02rem;margin-bottom:8px;color:var(--accent)}
+.blk p{margin:0 0 8px}
+.blk ul,.blk ol{margin:0;padding-left:1.25em;display:grid;gap:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
+.gc{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+.gc b{display:block;font-family:var(--f-display);font-size:.98rem;margin-bottom:2px}
+.gc span{font-size:.95rem;color:var(--muted)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:480px;font-size:.95rem}
+th,td{padding:8px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{background:var(--accent-soft);font-family:var(--f-display);font-size:.9rem}
+tr:last-child td{border-bottom:0}
+.note{background:var(--note-bg);color:var(--note-ink);border-left:4px solid var(--note-line);border-radius:0 10px 10px 0;padding:10px 14px}
+.note b{font-family:var(--f-display)}
+.quote{margin:0;padding:6px 0 6px 16px;border-left:3px solid var(--accent);font-style:italic}
+.quote small{display:block;font-style:normal;color:var(--muted)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 16px;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ok{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+
+/* Werkzeugleisten */
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:26px 0 16px}
+.tools label{display:grid;gap:4px;font-size:.85rem;font-weight:600;color:var(--muted);min-width:0}
+select{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;width:100%;min-width:0;text-overflow:ellipsis}
+.tools label{flex:1 1 240px}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:9px 14px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+h2.sec{font-size:1.5rem;margin-top:28px}
+.lead{color:var(--muted);margin:6px 0 0}
+
+/* Quiz */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
+.qmeta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:.92rem;margin-bottom:10px;flex-wrap:wrap}
+.qtext{font-family:var(--f-display);font-size:1.3rem;font-weight:500;margin:14px 0 16px;text-wrap:balance}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.opt .l{flex:none;width:26px;height:26px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font-size:.85rem;font-weight:700}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.fb{margin-top:16px;border-radius:12px;padding:12px 14px;background:var(--accent-soft)}
+.fb b{display:block;margin-bottom:2px}
+.fb.good b{color:var(--good)}.fb.bad b{color:var(--bad)}
+.ev{display:grid;gap:8px;margin-top:8px;font-weight:400;color:var(--ink)}
+.ev>div span{display:block;font-size:.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.run{margin-top:10px;font-size:.9rem;color:var(--muted)}
+.score small{font-size:1.2rem;color:var(--muted);font-weight:500}
+.srows{display:grid;gap:12px;margin-top:10px}
+.srow{display:grid;gap:6px}.srow .sn{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.srow .sn span{color:var(--muted);font-size:.9rem}
+.btn.sm{padding:5px 10px;font-size:.85rem;justify-self:start}
+.sum{margin:12px 0 0}
+.rvs{display:grid;gap:10px}
+.rv{border:1px solid var(--line);border-left:4px solid var(--good);border-radius:10px;padding:10px 12px}
+.rv.bad{border-left-color:var(--bad)}
+.rv summary{cursor:pointer;display:flex;gap:10px;font-weight:600}
+.rv .mk{flex:none;color:var(--good)}.rv.bad .mk{color:var(--bad)}
+.score{font-family:var(--f-display);font-size:3rem;font-weight:700;color:var(--accent)}
+.wl{display:grid;gap:10px;margin-top:14px}
+.wl div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.95rem}
+.wl div b{display:block}
+
+/* Karten */
+.stage{perspective:1200px;margin:6px 0 14px}
+.card{width:100%;min-height:260px;border:0;background:none;padding:0;position:relative;transform-style:preserve-3d;transition:transform .5s}
+.card.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;padding:24px;display:flex;flex-direction:column;justify-content:center;gap:8px;overflow:auto;text-align:left}
+.front{background:var(--surface);border:1px solid var(--line)}
+.back{background:var(--accent);color:var(--accent-ink);transform:rotateY(180deg)}
+.face small{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.75rem;opacity:.75}
+.face p{margin:0;font-family:var(--f-display);font-size:1.3rem;font-weight:500;text-wrap:balance}
+.back p{font-family:var(--f-body);font-size:1.12rem;font-weight:400;line-height:1.5}
+.cc{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.cc .mid{display:flex;gap:8px;flex-wrap:wrap}
+.hint{color:var(--muted);font-size:.9rem;margin-top:12px}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+footer{margin-top:40px;color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:520px){.panel{padding:16px}.face{padding:18px}.face p{font-size:1.15rem}.tab{padding:7px 11px}}
+@media (prefers-reduced-motion:reduce){.card,.bar>i{transition:none}}
+[hidden]{display:none!important}
+</style>
+
+<header class="top"><div class="wrap">
+  <div class="brand">Modul 10 · Kommunikation</div>
+  <div class="tabs" role="tablist" aria-label="Bereiche">
+    <button class="tab" role="tab" id="t-path" data-tab="path" aria-selected="true">Lernpfad</button>
+    <button class="tab" role="tab" id="t-quiz" data-tab="quiz" aria-selected="false">Quiz</button>
+    <button class="tab" role="tab" id="t-cards" data-tab="cards" aria-selected="false">Karten</button>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="bubble">
+      <h1>Grundlagen der Kommunikation und Praxistransfer</h1>
+      <p>Lernhilfe zum Sachkundelehrgang für berufliche Betreuer, aufgebaut aus den drei Skripten des Moduls und ergänzt um Literatur.</p>
+    </div>
+    <div class="prog">
+      <div class="prog-row"><span id="p-text"></span><span id="p-extra"></span></div>
+      <div class="bar"><i id="p-bar" style="width:0%"></i></div>
+    </div>
+  </section>
+
+  <!-- LERNPFAD -->
+  <section id="v-path" aria-labelledby="t-path">
+    <ol class="path" id="path"></ol>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="v-quiz" aria-labelledby="t-quiz" hidden>
+    <h2 class="sec">Quiz</h2>
+    <p class="lead">Wähle ein Thema und die Anzahl der Fragen. Nach jeder Antwort siehst du die Erklärung aus dem Skript.</p>
+    <div class="tools">
+      <label for="q-topic">Thema<select id="q-topic"></select></label>
+      <div><div style="font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:4px">Fragen</div>
+        <div class="seg" id="q-count"><button data-n="10" aria-pressed="true">10</button><button data-n="20" aria-pressed="false">20</button><button data-n="999" aria-pressed="false">Alle</button></div></div>
+      <button class="btn pri" id="q-start">Quiz starten</button>
+    </div>
+    <div id="q-area"></div>
+  </section>
+
+  <!-- KARTEN -->
+  <section id="v-cards" aria-labelledby="t-cards" hidden>
+    <h2 class="sec">Karteikarten</h2>
+    <p class="lead">Karte antippen zum Umdrehen. Pfeiltasten blättern, Leertaste dreht um.</p>
+    <div class="tools">
+      <label for="c-topic">Thema<select id="c-topic"></select></label>
+      <div><div style="font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:4px">Anzeige</div>
+        <div class="seg" id="c-mode"><button data-m="all" aria-pressed="true">Alle</button><button data-m="open" aria-pressed="false">Nur offene</button></div></div>
+      <button class="btn" id="c-shuffle">Mischen</button>
+    </div>
+    <div id="c-area"></div>
+  </section>
+
+  <footer>
+    Die Seite fasst die Inhalte des Moduls zusammen und ersetzt die Unterlagen nicht. Der Lernfortschritt wird nur in diesem Browser gespeichert.
+  </footer>
+</main>
+
+<script>
+"use strict";
+/* ---------- Inhalte ---------- */
+const SRC={B:"Skript 1",R:"Skript 2",S:"Skript 3",W:"Ergänzung"};const SCLS={B:"s1",R:"s2",S:"s3",W:"s4"};
+const ST=[
+{id:1,t:"Grundlagen der Kommunikation",src:"BS",teaser:"Man kann nicht nicht kommunizieren: die Regeln nach Watzlawick, Beziehungsebene und nonverbale Signale.",
+ b:[
+ {k:"p",t:"Kommunikation findet immer statt, auch wenn niemand etwas sagt. Entscheidend ist, was beim anderen ankommt, nicht was gemeint war."},
+ {k:"ul",h:"Grundmerkmale",i:["Man kann nicht nicht kommunizieren.","Kommunikation läuft immer auch nicht-sprachlich (nonverbal) ab.","Wir erleben unser eigenes Verhalten meist als Reaktion auf das Verhalten unseres Gegenübers."]},
+ {k:"grid",h:"Vier Kommunikationsregeln nach Watzlawick",i:[
+  ["1. Man kann nicht nicht kommunizieren","Auch Schweigen sagt etwas über die eigene Befindlichkeit und Kommunikationsbereitschaft aus."],
+  ["2. Jede Nachricht wird vom Empfänger interpretiert","Ob eine Botschaft verstanden wird, hängt von dessen individueller Wahrnehmung ab."],
+  ["3. Gesendet ist nicht gleich empfangen","Nicht die Absicht zählt, sondern die Wirkung. Gefühle abzusprechen („Du musst dich nicht aufregen“) verstößt gegen diese Regel."],
+  ["4. Keine Wiederholungen bei Missverständnissen","Besser nachfragen, wie der andere die Botschaft verstanden hat, oder einräumen, dass man sich unklar ausgedrückt hat."]]},
+ {k:"p",h:"Kommunikation als Eisberg",t:"Die Sachebene liegt über der Wasserlinie, die Beziehungsebene (Sympathie, Antipathie, Zuneigung, Neid, Achtung) darunter. <b>Hat man auf der Beziehungsebene guten Kontakt, ist eine Einigung auf der Sachebene leichter, oder eine Uneinigkeit leichter zu ertragen.</b>"},
+ {k:"grid",h:"Körpersprache und Lieblingskanal",i:[
+  ["Mimik","Sprachliche Aussagen werden oft erst durch den Gesichtsausdruck eindeutig. Er zeigt Empfindungen am deutlichsten. Freundlich und entspannt, kein aufgesetztes Dauergrinsen."],
+  ["Blickkontakt","Reguliert den Gesprächsablauf. Dominante Menschen fixieren oft, ein gesenkter Blick signalisiert Unterwürfigkeit oder Schuldgefühle."],
+  ["Lieblingskanal","Die meisten bevorzugen den visuellen („sieht gut aus“), auditiven („hört sich gut an“) oder gefühlsorientierten („fühlt sich gut an“) Kanal. Wer sich darauf einstellt, schafft mehr Übereinstimmung."]]},
+ {k:"quote",t:"Keine Methode ersetzt persönliche Wärme, Toleranz und [die] positive Einstellung zum Menschen.",by:"Ruth C. Cohn"}
+ ]},
+{id:2,t:"Vier Seiten einer Nachricht",src:"B",teaser:"Sach-, Beziehungs-, Selbstoffenbarungs- und Appellebene, die vier Ohren und die Gesprächsvorbereitung.",
+ b:[
+ {k:"grid",h:"Die vier Seiten (Sender)",i:[
+  ["Sachebene","Worüber informiere ich?"],
+  ["Selbstoffenbarung","Was gebe ich von mir selbst kund?"],
+  ["Beziehungsebene","Was halte ich von dir und wie stehen wir zueinander?"],
+  ["Appell","Wozu möchte ich dich veranlassen?"]]},
+ {k:"grid",h:"Die vier Ohren (Empfänger)",i:[
+  ["Sachohr","Wie ist der Sachverhalt zu verstehen?"],
+  ["Selbstoffenbarungsohr","Was ist mit ihm/ihr? Wie geht es ihm/ihr?"],
+  ["Beziehungsohr","Wie sieht mich mein Gegenüber?"],
+  ["Appellohr","Was soll ich denken, tun oder lassen?"]]},
+ {k:"table",h:"Beispiel: „Da ist was Grünes im Essen.“",c:["","Sender meint","Empfänger hört"],r:[
+  ["Sache","Da ist was Grünes im Essen.","Da ist was Grünes im Essen."],
+  ["Selbstoffenbarung","Ich weiß nicht, was das ist.","Das schmeckt mir nicht."],
+  ["Beziehung","Du wirst wissen, was es ist.","Du bist eine schlechte Köchin!"],
+  ["Appell","Sag mir, was es ist!","Lass beim nächsten Mal das Grüne weg!"]]},
+ {k:"table",h:"Stärken und Schwächen der Ohren",c:["Ohr","Stärke","Schwäche"],r:[
+  ["Sachohr","sachlich, neutral, ergebnisorientiert, objektiv","unpersönlich, gefühllos, kühl"],
+  ["Appellohr","hilfsbereit, lösungsorientiert","nicht bedürfnisorientiert, suggestibel"],
+  ["Beziehungsohr","sensibel, feinfühlig, menschlich","verletzlich, empfindlich, leicht gekränkt, nimmt persönlich"],
+  ["Selbstoffenbarungsohr","einfühlsam, verständnisvoll","nicht selbstkritisch"]]},
+ {k:"table",h:"Gespräche gezielt vorbereiten",c:["Ebene","Fragen für die Vorbereitung"],r:[
+  ["Sache","Themen und Reihenfolge, Argumente und Beispiele"],
+  ["Beziehung","Positives Klima schaffen, Kritik konstruktiv äußern, Raum für die Sicht des Gegenübers lassen"],
+  ["Selbstoffenbarung","Eigenes Erleben der Situation, eigene Gefühle und Bedürfnisse"],
+  ["Appell","Maximal- und Minimalziel, Wünsche und Bitte"]]}
+ ]},
+{id:3,t:"Gespräche führen: Fragen und Zuhören",src:"BS",teaser:"Offene und geschlossene Fragen, aktives Zuhören, fördernder Gesprächsverlauf und Gesprächsleitfaden.",
+ b:[
+ {k:"table",h:"Fragearten",c:["","Offene Fragen","Geschlossene Fragen"],r:[
+  ["Form","W-Fragen: Wer? Wie? Was? Wieso? Weshalb? Warum? Wo? Wozu?","Entscheidungsfragen: Antwort Ja oder Nein"],
+  ["Wirkung","Informationen einholen, Kontakt herstellen, Hintergründe erfahren","Verbindlichkeit herstellen, Gespräch kurz halten, Entscheidung vorbereiten"],
+  ["Wann?","Eher zu Beginn eines Gesprächs","Eher am Ende eines Gesprächs"]]},
+ {k:"note",t:"<b>Praxis:</b> Wer fragt, beeinflusst den Gesprächsverlauf positiv. Man kann nur überzeugen, wenn man Standpunkt, Interessen und Wünsche des anderen kennt. Zu Beginn mitteilen, wie viel Zeit zur Verfügung steht: Das strukturiert, ohne unhöflich zu wirken."},
+ {k:"ul",h:"Aktives Zuhören",i:["<b>Zuhören:</b> Blickkontakt, Nicken, „Mhm“, „ja“, „ah“","<b>Verstehen:</b> Kern des Gehörten in eigenen Worten zusammenfassen, Verständnis überprüfen","<b>Gefühle spiegeln:</b> sich in den anderen hineinversetzen, Gefühle verbalisieren"]},
+ {k:"grid",h:"Techniken des aktiven Zuhörens",i:[
+  ["Bestätigungslaute","„hm“, „ah“, „achso“"],
+  ["Paraphrasieren","Die Aussage mit eigenen Worten wiederholen"],
+  ["Zusammenfassen","Das Gehörte kurz mit eigenen Worten zusammenfassen"],
+  ["Verbalisieren","Die Gefühle des Gegenübers spiegeln"],
+  ["Nachfragen","Verständnis sichern, Hintergründe klären"]]},
+ {k:"ol",h:"Fördernder Gesprächsverlauf",i:["<b>Grundhaltung:</b> eigene Sichtweise zurückstellen, sich in die Sicht des Gegenübers hineinversetzen","<b>Nonverbales Zuhören:</b> Blickkontakt, Nicken, Körper zuneigen, „Ja“, „Genau“, „Hm“","<b>Aktives Zuhören:</b> in eigenen Worten wiederholen und so prüfen, ob man richtig verstanden hat","<b>Gefühle ansprechen:</b> indirekt oder nonverbal Geäußertes direkt benennen („Das ärgert Sie!“)","<b>Wünsche herausarbeiten:</b> „Was wäre denn eine gute Lösung für Sie?“","<b>Zusammenfassen:</b> das Wesentliche sichern und zum Ergebnis überleiten"]},
+ {k:"ol",h:"Gesprächsleitfaden, vier Phasen",i:["Begrüßung, positive Atmosphäre","Eigener Standpunkt (Ich-Botschaft), Standpunkt des anderen","Im Dialog zur gemeinsamen Lösung, Vereinbarung treffen","Positiver Abschluss"]},
+ {k:"note",t:"<b>Merke:</b> Die meisten Menschen hören zu, um zu antworten, nicht um zu verstehen. Aktives Zuhören schafft ein positives Gesprächsklima."}
+ ]},
+{id:4,t:"Feedback, Ich-Botschaften und Konflikte",src:"BS",teaser:"Kritik ohne Kränkung: Ich-Botschaft, Feedback-Burger, Feedbackregeln und Konfliktvarianten.",
+ b:[
+ {k:"table",h:"Du-Botschaft und Ich-Botschaft",c:["","Du-Botschaft","Ich-Botschaft"],r:[
+  ["Beispiele","„Du solltest lieber mal…“, „Immer musst du…“, „Warum können Sie nicht…“","„Es ärgert/trifft mich…“, „Ich wünsche mir…“, „Ich spüre…“"],
+  ["Wirkung","Widerstand, Widerspruch, Rechtfertigung, Schuld, Scham, Verletzung, Ärger","Betroffenheit, Nachdenklichkeit, Chance zur Klärung"]]},
+ {k:"note",t:"<b>Echte Ich-Botschaft:</b> Sie drückt ausschließlich eigene Wahrnehmungen, Gefühle und Bedürfnisse aus, ohne dem Empfänger unterschwellig die Verantwortung zu geben. „Ich fühle mich missverstanden“ ist keine, denn es drückt die Interpretation aus, der andere habe nicht verstanden. Echt wäre: „Ich bin mir nicht sicher, ob ich mich richtig ausgedrückt habe.“"},
+ {k:"ol",h:"Vollständige Ich-Botschaft",i:["Eigene Sichtweise schildern","Auswirkungen beschreiben","Eigene Gefühle benennen","Erfragen, wie der andere die Situation sieht","Eigene Wünsche und Erwartungen formulieren"]},
+ {k:"ol",h:"Richtig kritisieren in vier Schritten",i:["<b>Beobachten:</b> neutral und konkret, ohne „immer“","<b>Fühlen:</b> nur sagen, was man selbst fühlt. „Ich habe das Gefühl, du hörst mir nicht zu“ ist ein Pseudo-Gefühl","<b>Bedürfnis nennen:</b> z. B. „nach Ordnung und Sauberkeit“","<b>Wunsch äußern:</b> so konkret wie möglich, keine abstrakten Wörter wie „Respekt“"]},
+ {k:"table",h:"Feedback-Burger, von oben nach unten",c:["Schicht","Formulierung"],r:[
+  ["Positives Ende","Ich schätze an dir…"],["Wunsch","Ich wünsche mir…"],["Wirkung","Das wirkt auf mich…"],["Wahrnehmung","Mir ist aufgefallen…"],["Positiver Anfang","Ich finde gut…"]]},
+ {k:"ol",h:"Das Feedback-Prinzip, vier Fragen",i:["Inwiefern kommen wir unseren/Ihren Zielen näher?","Wie ist die Qualität unserer Vorgehensweise?","Wie ist die Qualität unserer Arbeitsbeziehung?","Was müsste passieren, damit Zielerreichung, Vorgehensweise und Arbeitsbeziehung noch besser werden?"]},
+ {k:"ul",h:"Feedbackregeln",i:["Klar, präzise und menschlich wertschätzend, keine schwammigen Abschwächungen („Ich hatte nur mal sagen wollen…“)","Feedback an den richten, den es betrifft („Haben Sie es ihr schon gesagt?“)","Öffentliche Kritik ist verheerend für das Selbstwertgefühl","Zuerst Positives, dann Optimierungsvorschläge, dann über die Umsetzung sprechen"]},
+ {k:"p",h:"Konfliktvarianten",t:"Konflikte sind normal. Hilfreich ist die Frage nach der Ursache: <b>Beziehungskonflikt</b> (mich stört etwas an der Person oder sie kann mich nicht leiden) oder <b>Sachkonflikt</b> (unterschiedliche Ansicht in der Sache, z. B. zwischen Antragsteller und Krankenkasse). Oft liegt auch beides vor."}
+ ]},
+{id:5,t:"Selbstreflexion: Bedürfnisse, Gefühle, Wahrnehmung",src:"B",teaser:"Maslow und Grawe, Emotionsregulation, Bewusstheitsrad, Meta-Ebene und Kernquadrat.",
+ b:[
+ {k:"grid",h:"Bedürfnisse",i:[
+  ["Maslow (von unten nach oben)","Physiologisch (Essen, Schlafen, Trinken), Sicherheit und Kontrolle, Soziales (Zugehörigkeit), Wertschätzung und Respekt, Selbstverwirklichung"],
+  ["Grawe: vier psychische Grundbedürfnisse","Bindung · Kontrolle und Orientierung · Lustgewinn und Unlustvermeidung · Selbstwerterhöhung und Selbstwertschutz"]]},
+ {k:"quote",t:"Wir können die Umstände um uns herum nicht immer beeinflussen, aber unsere Reaktion auf die jeweiligen Umstände.",by:"Selbststeuerung"},
+ {k:"ul",h:"Emotionsregulation",i:["Vermeidung von Gefühlen verstärkt die unangenehmen Gefühle.","Hilfreich: Wissen um Emotionstoleranz, Gefühle kommen und gehen.","Gefühle mit Akzeptanz durchleben, statt sie zu verstecken (Carl Rogers)."]},
+ {k:"table",h:"Irrtümer über Gefühle (alle falsch)",c:["Irrtum"],r:[["„Wenn ich Gefühle unterdrücke, gehen sie sofort weg.“"],["„Wenn ich Gefühle zulasse, werden sie immer stärker.“"],["„Wenn ich meine Gefühle zeige, werde ich auf jeden Fall verletzt.“"],["„Ich muss immer alle Gefühle loswerden.“"]]},
+ {k:"ul",h:"Ungünstige Reaktionen auf emotionale Belastung",i:["„Augen zu und durch!“","Sofort das Thema wechseln","Ratschläge erteilen („Entspann dich einfach“)","Aus dem Weg gehen","Die Schuld bei der belasteten Person suchen","Entsetzt reagieren und das Leid dramatisieren"]},
+ {k:"p",h:"Bewusstheitsrad (Miller)",t:"Sichtbar sind <b>Verhalten</b> und <b>Wahrnehmung</b>. Unsichtbar bleiben <b>Gedanken (Interpretation)</b>, <b>Gefühle</b> und <b>Absichten</b>. Wahrnehmung ist, was man sieht oder hört („Ich sehe, dass du weinst“). Interpretation ist die Deutung („Du siehst traurig aus“). Auch „Du hörst mir nicht zu“ ist eine Interpretation der Wahrnehmung „Du siehst mich nicht an“."},
+ {k:"note",t:"<b>Frankl:</b> „Zwischen Reiz und Reaktion liegt ein Raum. In diesem Raum liegt unsere Macht zur Wahl unserer Reaktion.“ Auf der Kurve der Emotionen ist die Gefühlsregulation vor und nach dem Gipfel möglich, auf dem Gipfel gibt es keine Kontrolle über die Gefühle."},
+ {k:"ul",h:"Gedanken-Regulation",i:["Negative Gedanken verstärken negative Gefühle, ebenso ihr Unterdrücken.","Hilfreich: Gedanken beobachten und tolerieren.","<b>Objekt-Ebene</b> = Identifikation mit den eigenen Gedanken, <b>Meta-Ebene</b> = Distanzierung von ihnen."]},
+ {k:"table",h:"Kernquadrat (Beispiel Belastbarkeit)",c:["Feld","Beispiel"],r:[
+  ["Kernqualität","Belastbarkeit"],["Falle („zu viel des Guten“)","Aufopferung"],["Positives Gegenteil / Herausforderung","Selbstachtsamkeit"],["Allergie („zu viel des Guten“ der Herausforderung)","Vulnerabilität / Schwäche"]]}
+ ]},
+{id:6,t:"Ressourcenorientierung, Dos und Don’ts",src:"BS",teaser:"Acht Schritte ressourcenorientierter Gesprächsführung und der Umgang mit schwierigen Gesprächssituationen.",
+ b:[
+ {k:"ol",h:"Ressourcenorientierte Gesprächsführung",i:["Problem benennen","Bisherige Bewältigungsstrategien würdigen","Ausnahmen von dem Problem erfragen","Sinn und Zweck des Ziels herausarbeiten","Hoffnung auf Erreichen des Ziels stärken","Realisierbarkeit des Ziels einschätzen","Konkrete Schritte zum Ziel planen","Erfolge auswerten"]},
+ {k:"table",h:"Dos und Don’ts der Kommunikation",c:["Do","Beispiel"],r:[
+  ["Gesprächspartner namentlich ansprechen","„Guten Morgen, Frau Müller.“"],
+  ["Offene, zielorientierte Fragen","„Wie sehen Sie das?“"],
+  ["Ich-Botschaften","„Das ärgert mich, weil ich so gar nicht zu Wort komme.“"],
+  ["Aufmerksames Zuhören","Nicken, Blickkontakt, „Mhm…“"],
+  ["Umschreibendes Zuhören","„Habe ich Sie richtig verstanden, dass…?“"],
+  ["Wünsche herausarbeiten","„Sie wünschen sich also vor allem…“"],
+  ["Gefühle ansprechen","„Sie sind dann enttäuscht und traurig?“"],
+  ["Verständnis zeigen","„Ich kann gut verstehen, dass…“"]]},
+ {k:"table",c:["Don’t","Beispiel"],r:[
+  ["Du-/Sie-Botschaften, Pauschalierungen, Vorwürfe","„Immer müssen Sie alles weitererzählen.“"],
+  ["Bagatellisieren","„Da müssen Sie jetzt wohl durch.“"],
+  ["Verurteilen","„So wird das nichts.“"],
+  ["Belehren","„Das habe ich Ihnen doch schon mehrmals erklärt.“"],
+  ["Unterbrechen","–"]]},
+ {k:"table",h:"Schwierige Gesprächssituationen",c:["Situation","Do","Don’t"],r:[
+  ["Abwertend/aggressiv","Innere Distanz herstellen (gemeint ist die Rolle, nicht die Person), offen und klärend konfrontieren, Grenzen wahren","Abwertungen überhören, sich verteidigen („Aber das stimmt doch gar nicht!“), Gegenaggression"],
+  ["Antriebslosigkeit","„Baby Steps“, ärztliche Abklärung vorschlagen, eigenen Ärger wahrnehmen","Unter Druck setzen, Vorwürfe, dem Klienten Verantwortung abnehmen"],
+  ["Klagen","Professionelle Distanz halten, Verhalten konkret benennen, Handlungsspielräume aufzeigen","Beschwichtigen („So schlimm ist es doch gar nicht“), in die Verantwortungsfalle gehen, Wut zeigen"],
+  ["Schweigen / „Ich weiß nicht“","Schweigen lesen, selbst abwarten, einfache Fragen stellen","Zu schnell reagieren, von Thema zu Thema springen, komplizierte Fragen, ärgerlich reagieren"]]},
+ {k:"note",t:"<b>Deeskalation bei Hausbesuchen:</b> Vorab Gefährlichkeit einschätzen (Alkohol, Drogen, Gewaltvorgeschichte, Fluchtweg, Unterstützung). Im Ernstfall ruhig, beherrscht und empathisch wirken, offene Fragen stellen, Fluchtwege offen halten. Nicht abweisend oder dominant auftreten, keine Drohungen, nie einem bewaffneten Täter nähern."}
+ ]},
+{id:7,t:"Macht und professionelle Haltung",src:"BS",teaser:"Machtmissbrauch vorbeugen, Machtfragen stellen, Haltungs- und Beziehungskompetenzen.",
+ b:[
+ {k:"p",t:"<b>Macht</b> definiert den Umfang der Handlungsmöglichkeiten einer Person. Wird diese Handlungsmacht negativ genutzt, spricht man von <b>Machtmissbrauch</b>. Die Beziehung zwischen Betreuer und Klient ist formal asymmetrisch, deshalb ist eine vertiefte Selbst- und Machtreflexion unverzichtbar."},
+ {k:"ul",h:"Risikomanagement",i:["Voraussetzung: Kenntnis der Risiken des Machtmissbrauchs in der Betreuung und Auseinandersetzung damit","Begrenzung durch <b>Achtsamkeit, Bescheidenheit, Transparenz, Verantwortung</b>","Reflektierende Gespräche (Super- und Intervision)"]},
+ {k:"quote",t:"Bescheidenheit ist eine Eigenschaft, die vom Bewusstsein der eigenen Macht und Begrenztheit herrührt.",by:"Paul Cézanne"},
+ {k:"ul",h:"Machtfragen zur Reflexion",i:["Was verschafft mir meine Machtposition?","Wie bewusst ist mir diese Macht?","Welche Möglichkeiten habe ich, sie einzusetzen?","In welchen Situationen ist meine Macht besonders gefährlich, in welchen hilfreich?","Setze ich sie offensiv oder defensiv ein?","Wie rechtfertige ich den Einsatz meiner Macht?","Wann fühle ich mich ohnmächtig?"]},
+ {k:"note",t:"<b>Autorität:</b> Fachliche Kompetenz ist notwendig, aber nicht hinreichend. Hinzukommen muss eine hohe persönliche und soziale Kompetenz. Am erfolgreichsten ist, wer beides verbindet."},
+ {k:"grid",h:"Kompetenzen helfender Berufe (Damm/Kunstreich)",i:[
+  ["Selbstreflexive Haltung","Berufsmotivation hinterfragen, Wille zur Selbstreflexion, eigene Gefühle wahrnehmen, den Spagat des doppelten Mandats im Blick behalten (Pro-Klient oder Pro-Institution)"],
+  ["Förderliche Haltung","Klienten grundlegend akzeptieren, neugierig und offen sein, als Experten in eigener Sache respektieren, Ressourcen erkennen, ermutigen"],
+  ["Nicht förderlich","Reduktionistische Wahrnehmung der Erkrankung, vorschnelles Pathologisieren, künstliche Aufrechterhaltung von Abhängigkeit, Überfürsorglichkeit"],
+  ["Beziehungskompetenz","Eigene blinde Flecken kennen, Übertragung und Gegenübertragung reflektieren, Nähe und Distanz regulieren, eigene Unsicherheiten transparent machen, Supervision nutzen"]]}
+ ]},
+{id:8,t:"Übertragung, Persönlichkeit und Abwehr",src:"S",teaser:"Übertragung und Gegenübertragung, Persönlichkeitsstrukturen nach Riemann und König, Abwehrmechanismen.",
+ b:[
+ {k:"grid",h:"Übertragung und Gegenübertragung",i:[
+  ["Übertragung","Eine Person überträgt unbewusst Gefühle, Wertungen und Erwartungen aus früheren Beziehungen auf ein Gegenüber (positiv oder negativ). Auslöser können Haarfarbe, Alter, Beruf, Mimik, Geschlecht, Sprache u. a. sein."],
+  ["Gegenübertragung","Gefühle und Handlungsimpulse, die beim Berater oder Betreuer ausgelöst werden. Beeinflusst durch Lebensgeschichte, Persönlichkeitsstruktur und Geschlecht."]]},
+ {k:"ol",h:"Hinweise zum Wahrnehmen",i:["Gibt es keinen rationalen Grund für ein Verhalten, ist das Hauptmotiv wohl unbewusst und emotional (Eisbergmodell).","Nachspüren, welche Übertragungsauslöser man selbst haben könnte.","Häufig: Eltern-, Geschlechter-, erotische oder Geschwisterübertragung.","Gegenübertragungsgefühle geben Hinweise auf das eigentliche Problem und helfen, destruktive Verwicklungen zu vermeiden."]},
+ {k:"p",h:"Fallbeispiel",t:"Die Betreuerin Heike Fleißig ärgert sich, dass ihr Klient Willi Wahn wegen einer Routinemitteilung der Krankenkasse einen Termin will. Sie fragt nach Übertragungsauslösern (Altersunterschied, Rolle, fürsorgliches Auftreten) und vermutet eine Mutterübertragung: Er sucht Lob. Sie erinnert sich an eigene fehlende Anerkennung, lobt ihn und festigt die Beziehung. Zu beachten bleibt, welche Entwicklungen dadurch (z. B. Abhängigkeit) entstehen können."},
+ {k:"p",h:"Persönlichkeitsstrukturen",t:"Das Konzept geht auf Fritz Riemann („Grundformen der Angst“) zurück, ergänzt von Karl König. Es geht <b>nicht um Störungen</b>, sondern um Strukturen, die jeder Mensch in den ersten sechs Lebensjahren entwickelt. Jeder hat alle Anteile, meist sind ein oder zwei besonders ausgeprägt. Zu starke Ausprägung engt das Verhaltensspektrum ein."},
+ {k:"table",c:["Struktur","Grundkonflikt"],r:[
+  ["Narzisstisch","Selbstwertgefühl / Minderwertigkeit"],["Schizoid","Nähe / Distanz"],["Depressiv","Autonomie / Abhängigkeit"],["Zwanghaft","Aggression / Anpassung"],["Phobisch","Angst / Wagnis"],["Hysterisch","Planung / Chaos"]]},
+ {k:"note",t:"<b>Beispiele für Betreuer:</b> Stärker depressiv strukturierte umsorgen zu sehr. Stärker schizoid strukturierte bleiben auch dann distanziert, wenn Nähe nötig wäre. Narzisstischer Machtmissbrauch: sich „bejubeln“ lassen, statt auf Augenhöhe zu begegnen."},
+ {k:"p",h:"Abwehr",t:"Abwehr sind <b>unbewusste</b> Versuche, Angst und unangenehme Gefühle (Schmerz, Kränkung, Scham, Schuld) zu verringern. Sie schützen das Selbstwertgefühl und sind alltäglich, können aber die seelische Bewegungsfreiheit einschränken. Das Neue macht Angst, das Alte gibt relative Sicherheit, deshalb gelingt Veränderung nur wohldosiert."},
+ {k:"table",c:["Mechanismus","Kern"],r:[
+  ["Projektion","Eigene abgelehnte Eigenschaften oder Gefühle in anderen sehen"],
+  ["Spaltung","Gut und Böse, Schwarz und Weiß, keine Grautöne"],
+  ["Rationalisierung","Vernünftige Argumente, um Gefühlsschmerz zu entgehen („Ich wollte da sowieso nicht hin“)"],
+  ["Verschiebung","Wut auf einen anderen Menschen oder Gegenstand lenken als auf den Verursacher"],
+  ["Wendung gegen die eigene Person","Aggression richtet sich gegen sich selbst, häufig bei Depression"],
+  ["Reaktionsbildung","Das Gegenteil des eigentlich Gefürchteten leben (z. B. Erotik bekämpfen)"],
+  ["Konversion","Gefühle und Konflikte als körperliche Symptome"],
+  ["Intellektualisierung","Theoretisch über Gefühle reden, um sie nicht zu spüren"],
+  ["Regression","Rückkehr zu früheren, kindlichen Verhaltensweisen, z. B. passiv versorgen lassen"]]}
+ ]},
+{id:9,t:"Diversitätssensible Kommunikation",src:"R",teaser:"Diversität, rechtliche Grundlagen, Haltung, Ambiguitätstoleranz und diversitätssensible Sprache.",
+ b:[
+ {k:"p",t:"Diversität meint die Vielfalt von Merkmalen und Eigenschaften in einer Gruppe oder Gesellschaft. Entscheidend ist die <b>Grundhaltung</b>: Jeder Mensch ist in seiner Einzigartigkeit wertvoll. Es geht nicht ums Auswendiglernen, wie „die anderen“ sind."},
+ {k:"ul",h:"Diversität und Inklusion",i:["Beide zielen auf gleichberechtigte Teilhabe aller Menschen.","Diversität richtete sich anfangs gegen Rassismus, Inklusion auf die Gleichberechtigung von Menschen mit Behinderungen.","Vision: Jede Person wird eingebunden, ohne große Anpassungsleistungen leisten zu müssen. Die Gesellschaft schafft die Bedingungen."]},
+ {k:"ul",h:"Grundlage der Diversitätskompetenz",i:["Auseinandersetzung mit der eigenen Positionierung, Selbstreflexion","Ambiguitätstoleranz: widersprüchliche Informationen und unklare Ergebnisse als Teil des Lebens akzeptieren. Einfache Antworten („Das Kind ist faul“) übersehen mögliche Ursachen.","Angemessene Kommunikationsstrategien","Offenheit, kulturelle Selbstreflexion, bedingungslose Achtung der Menschenwürde"]},
+ {k:"table",h:"Rechtlicher Rahmen",c:["Norm","Inhalt"],r:[
+  ["Art. 1 GG","Würde des Menschen ist unantastbar"],
+  ["Art. 3 GG","Gleichheit vor dem Gesetz. Niemand darf wegen seiner Behinderung benachteiligt werden (Abs. 3 S. 2)"],
+  ["UN-BRK Art. 12 Abs. 3","Zugang zu der Unterstützung, die Menschen mit Behinderungen bei der Ausübung ihrer Rechts- und Handlungsfähigkeit brauchen"],
+  ["AGG","Allgemeines Gleichbehandlungsgesetz, z. B. Ausschreibung „m/w/d“"],
+  ["Anlage zu § 3 Abs. 4 BtRegV","Seit 01.01.2023 ist diversitätssensible Kommunikation Teil des Sachkundenachweises"]]},
+ {k:"table",h:"Betreuungsrecht: Der Wunsch im Mittelpunkt (§ 1821 BGB u. a.)",c:["Vorschrift","Inhalt"],r:[
+  ["§ 1821 BGB","Individueller Wunschvorrang statt objektivem, paternalistischem „Wohl“"],
+  ["§ 1821 Abs. 2 S. 1","Mutmaßlicher Wille: auch ethische oder religiöse Überzeugungen und persönliche Wertvorstellungen"],
+  ["§ 1821 Abs. 3","Wünschen nicht entsprechen, wenn (1) erhebliche Gefährdung von Person oder Vermögen und der Betreute die Gefahr krankheits- oder behinderungsbedingt nicht erkennen oder nicht danach handeln kann, oder (2) es dem Betreuer nicht zuzumuten ist"],
+  ["§ 1821 Abs. 5","Besprechungspflicht, Herzstück zur Wunschermittlung"],
+  ["§ 1863 BGB","Berichtspflichten mit Wunschdarstellung"],
+  ["§ 1838 BGB","Wunschvorrang in der Vermögenssorge"],
+  ["§§ 1848 ff. BGB","Wunsch als Richtschnur in Genehmigungsverfahren"]]},
+ {k:"note",t:"<b>Haltung:</b> Wertschätzung, Akzeptanz und Offenheit (Rogers: Kongruenz, Akzeptanz, Empathie; Berne: „Ich bin OK, du bist OK“). Person und Handeln sind zweierlei: Der Mensch wird bedingungslos akzeptiert, seine Taten und Einstellungen können bewertet und abgelehnt werden. Regelmäßige Reflexion (kollegiale Beratung, Supervision) ist nötig."},
+ {k:"table",h:"Diversitätssensible Sprache: Beispiele",c:["Statt","Besser"],r:[
+  ["Pflegefall","Mensch mit Assistenzbedarf"],["Greis","älterer Mensch / Mensch mit hohem Lebensalter"],["altersschwach","Mensch mit Pflegebedarf"],["senil","Mensch mit kognitiven Einschränkungen"],["Windel","Inkontinenzschutz"],["füttern","Essen reichen"],["Behinderter","Mensch mit Unterstützungsbedarf (Lebenshilfe)"],["sozial schwach, bildungsfern","Menschen mit Armutserfahrung, von Armut betroffen"]]},
+ {k:"ul",h:"Grundregeln der Sprache",i:["Keine Pauschalierungen, Klischees oder Stereotype","Angemessene, verständliche Ausdrücke, keine Fremdwörter und Fachsprache","Sprechweise an Einschränkungen anpassen (Lautstärke, Tempo, Wortwahl)","Geduld, Empathie und Höflichkeit","Begriffe wirken individuell: Manche empfinden auch neutrale Begriffe als abwertend. In Gesetzen muss teils „geistige Behinderung“ verwendet werden."]}
+ ]},
+{id:10,t:"Interkulturelle Kommunikation",src:"R",teaser:"Interkulturelle Kompetenz, Sprachbarrieren, Leichte Sprache, Übersetzung, Hotwords und Hotspots.",
+ b:[
+ {k:"p",t:"<b>Kultur</b> ist ein Orientierungssystem, das Wahrnehmung und Denken beeinflusst und Routinehandlungen ermöglicht. Jeder Mensch hat seine eigene kulturelle Identität, auch durch Region, Generation, Milieu oder Erkrankung. Interkulturelle Kompetenz ist die Fähigkeit, angemessen mit Menschen anderer kultureller Prägung zu interagieren."},
+ {k:"table",c:["Interkulturelle Kompetenz beinhaltet","beinhaltet nicht"],r:[
+  ["Reflexion der eigenen kulturellen Gebundenheit","eigene Wertvorstellungen aufgeben"],
+  ["Perspektivwechsel, wertfreier Umgang mit dem Fremden","dem Betreuten eigene Werte aufzunötigen"],
+  ["Proaktiver Umgang mit Nichtwissen, d. h. Nachfragen","alles über die Kultur des Betreuten zu wissen"],
+  ["Flexibilität, Methodenvielfalt, Ambiguitätstoleranz","streng kulturspezifischen Handlungsanweisungen zu folgen"],
+  ["Keine Reduzierung einer Person auf die regionale Herkunft","Betreuung neu zu definieren"]]},
+ {k:"grid",h:"Modelle",i:[
+  ["Vier Tiefenstrukturen der Kultur","Werte, Rituale, Symbole, Identifikationsfiguren"],
+  ["Drei Dimensionen des Kulturbegriffs","Geografische, religiöse und soziokulturelle Bezugsgrößen"],
+  ["Drei Kompetenzen","Verstehenskompetenz (Wissen), Verhaltenskompetenz, Kommunikationskompetenz"]]},
+ {k:"ol",h:"Sieben Phasen interkulturellen Lernens (Grosch/Leenen)",i:["Kulturgebundenheit menschlichen Verhaltens erkennen und akzeptieren","Fremdkulturelle Muster als fremd wahrnehmen, ohne sie zu bewerten","Eigene Kulturstandards identifizieren und ihre Wirkung abschätzen","Deutungswissen über fremde Kulturen erweitern","Verständnis und Respekt für fremdkulturelle Muster entwickeln","Eigene kulturelle Optionen erweitern, flexibel mit Regeln umgehen","Konstruktive Beziehungen aufbauen, mit interkulturellen Konflikten umgehen"]},
+ {k:"p",h:"Sprachbarrieren",t:"Wünsche können nicht adäquat artikuliert oder aufgenommen werden. Die Wunschermittlung (§ 1821 Abs. 2 BGB) wird schwierig, bei der betroffenen Person können Ohnmacht, Ärger und Distanz entstehen. Oft merkt sie lange nicht, dass sie nicht verstanden wurde."},
+ {k:"ul",h:"Was der Betreuer tun kann",i:["Kurze Sätze, einfache, korrekte Grammatik. Kein Konjunktiv, kein Plusquamperfekt, kein Futur II, kein Dialekt, keine Redewendungen.","<b>Leichte Sprache:</b> schwere Wörter erklären und ankündigen, für gleiche Dinge immer dasselbe Wort (nicht „Tablette“ und „Pille“ wechseln).","Deutlich artikulieren, ausreichend laut, Mimik, Gestik und Tonfall unterstützend nutzen, ruhig, geduldig und höflich bleiben.","Bilder und Piktogramme bei einfachen Fragen nutzbar, nicht bei komplexen Sachverhalten."]},
+ {k:"table",h:"Übersetzung",c:["Thema","Hinweis"],r:[
+  ["Qualifizierte Übersetzer","Zertifizierte Übersetzer gegen Honorar. Für amtliche Dokumente i. d. R. beglaubigte Übersetzung."],
+  ["Kulturelle Mittler","Oft ehrenamtlich und geschult, erklären auch kulturelle Unterschiede."],
+  ["Selbst übersetzen","Davon abraten (z. B. für Arzt, Sozialamt)."],
+  ["Angehörige, Bekannte","Nur im Notfall. Keine minderjährigen Kinder."],
+  ["Apps","Nur für einfache Verständigung."],
+  ["Kosten","Keine gesetzliche Regelung zur Übernahme der Dolmetscherkosten."],
+  ["Anlaufstellen","JMD = Jugendmigrationsdienst (unter 27 Jahre). MBE = Migrationsberatung für Erwachsene (alle anderen)."]]},
+ {k:"grid",h:"Hotwords, Hotspots und nonverbale Signale",i:[
+  ["Hotwords","Kulturell aufgeladene Begriffe wie Ehe, Ehre, Heimat, Liebe, Freund, Freiheit, Religion, Arbeit, Kollege. Ihre Bedeutung steht nicht im Wörterbuch."],
+  ["Hotspots","Situationen mit erhöhtem Konfliktpotenzial, z. B. Begrüßung (Handschlag? Welche Hand?) und Anrede (Du oder Sie, Titel)."],
+  ["Blickkontakt","In Deutschland üblich. In manchen asiatischen und afrikanischen Kulturen gilt direktes Ansehen einer Autoritätsperson als respektlos."],
+  ["Nähe und Distanz","Deutschland: etwa eine Armlänge. Andere Kulturen: größere Nähe und Berührung. Zurückweichen kann als Ablehnung gelten."],
+  ["Gesten","Kopfschütteln kann „ja“ bedeuten. Heranwinken mit der Handfläche nach oben kann beleidigen. Lächeln kann Unbehagen ausdrücken."],
+  ["Scham und Tabu","Körperausscheidungen, Sexualität, persönliche Verhältnisse, Entschuldigungen („Gesichtsverlust“)"]]},
+ {k:"note",t:"<b>Merke:</b> Auch Tabuthemen müssen besprochen werden, sonst kann das Betreuungsgericht nicht nachvollziehen, wie und warum Entscheidungen fielen (Berichtspflicht mit Wunschdarstellung, § 1863 BGB). Was die eigenen kulturellen Gepflogenheiten sind, erfährt man im Gespräch mit dem Betreuten, nicht aus Reiseratgebern."}
+ ]}
+,{id:11,t:"Ergänzung: Gesprächsführung",src:"W",teaser:"Ergänzende Literatur: Merkmale guter Gespräche, Gesprächsphasen, Vorbereitung in fünf Schritten und methodische Ansätze.",
+ b:[
+ {k:"note",t:"<b>Hinweis:</b> Diese Station stammt nicht aus den drei Skripten, sondern aus ergänzender Literatur. Sie vertieft vieles, was die Skripte anreißen."},
+ {k:"ul",h:"Merkmale guter Gesprächsführung (nach Benien)",i:["Klar und explizit statt verwickelt und einseitig","Situationsangemessen statt übertrieben beschwichtigend","Metakommunikativ: das Gespräch selbst ansprechen, statt automatisch weiterzutreiben","Zuhören statt sich automatisch zu rechtfertigen","Selbstgeklärt statt mit Doppelbotschaften","Gute Wahrnehmung nach innen und außen, statt unbemerkten Projektionen und Übertragungen aufzusitzen","Ich-Sprache der Verantwortung, Wünsche statt Vorwürfen","Ehrlich und direkt, kein Tratsch","<b>Selektiv authentisch</b> statt ungeschützter, grenzenloser Offenheit","Konkret bleiben und achtungsvoll gegenüber sich und anderen"]},
+ {k:"p",h:"Doppelte Stimmigkeit (Schulz von Thun)",t:"Ein gutes Gespräch muss sowohl zur <b>Person</b> als auch zur <b>Situation</b> und zum Kontext passen. Es muss klar sein, wie es dazu kommt (Vorgeschichte), welchen Sinn es macht (Ziel), und warum ausgerechnet ich, mit dir, dieses Thema bespreche. Methoden sind nie Patentrezepte."},
+ {k:"ol",h:"Allgemeines Verlaufsschema in fünf Phasen (Benien)",i:["<b>Anfangsphase:</b> Kontakt herstellen, Rahmen klären","<b>Informationsphase:</b> alle auf denselben Stand bringen, Problem beschreiben","<b>Argumentationsphase:</b> austauschen, Ziele klären, Umsetzung diskutieren","<b>Beschlussphase:</b> entscheiden, Aufgaben und Termine festlegen","<b>Abschlussphase:</b> Ergebnisse zusammenfassen, Offenes festhalten, verabschieden"]},
+ {k:"ol",h:"Klärungsgespräch als Basismodell, sieben Phasen (Thomann/Schulz von Thun)",i:["Kontakt- und Situationsklärung (Joining, Framing, Arbeitsbündnis)","Thema herausfinden","Die Sichtweise jedes Einzelnen","Gestalteter Dialog und Auseinandersetzung","Vertiefung und Prägnanz der Gefühle oder sachliche Problemlösung","Verstandesmäßiges Einordnen, Vereinbarungen und Hausaufgaben","Die Situation abschließen"]},
+ {k:"ol",h:"Gesprächsvorbereitung in fünf Schritten",i:["Kontext, Vorgeschichte und Anlass klären","Selbstklärung: Themen, Ziele, Personen und Beziehungen","Perspektivenwechsel: Identifikation mit dem Gesprächspartner","Gesprächsform und Ablauf wählen","Rahmen klären, organisieren und einladen"]},
+ {k:"note",t:"<b>Verbindung zum Vier-Seiten-Modell:</b> Die Vorbereitung orientiert sich an den vier Seiten einer Nachricht (Sache, Beziehung, Selbstoffenbarung, Appell). Ziel ist innere Klarheit: das Richtige zum richtigen Zeitpunkt sagen."},
+ {k:"grid",h:"Methodische Ansätze",i:[
+  ["Kooperative Gesprächsführung","Gespräch als gemeinsames, dialogisches Problemlösen. Breit einsetzbar, auch außerhalb von Beratung."],
+  ["Lösungsorientiert","Setzt bei positiven Erfahrungen und Ressourcen an, sucht Ausnahmen vom Problem, stärkt Selbstwirksamkeit. Stößt im Zwangskontext schnell an Grenzen."],
+  ["Motivierend (Miller/Rollnick)","Für Menschen mit wenig Änderungsmotivation. Baut Motive systematisch auf, orientiert sich an Stadien der Veränderungsbereitschaft."],
+  ["Systemisch im Zwangskontext","Gespräche, in denen Klienten nicht freiwillig teilnehmen."]]},
+ {k:"ul",h:"Hauptaktivitäten in der Gesprächsführung",i:["Aufmerksam zuhören, hilfreich fragen","Gedanken prägnant und Gefühle treffend wiedergeben","Mit Schweigen umgehen, transparent strukturieren","Eigene Lösungsvorschläge entwickeln, Stellung nehmen (Zustimmung und Kritik)","Beziehungssensibel kommunizieren, explizite Metakommunikation","Mit Widerstand als Form der Kooperation arbeiten","Killerphrasen neutralisieren"]}
+ ]}
+];
+
+/* Quiz: [Station, Frage, richtige Antwort, [falsche], Erklärung] */
+const QZ=[
+[1,"Was bedeutet „Man kann nicht nicht kommunizieren“?","Auch Schweigen und Verhalten teilen dem anderen etwas mit",["Kommunikation braucht immer eine bewusste Absicht","Nur gesprochene Sprache zählt als Kommunikation","Schweigen beendet jede Kommunikation"],"Selbst wer schweigt, sagt etwas über seine Befindlichkeit und Kommunikationsbereitschaft aus (Watzlawick)."],
+[1,"Was zählt laut Skript bei einer Botschaft vor allem?","Die Wirkung beim Empfänger",["Die Absicht des Senders","Die Länge der Erklärung","Die Lautstärke"],"Nicht das, was ich senden wollte, sondern das, was beim anderen ankommt, ist entscheidend."],
+[1,"Was ist bei einem Missverständnis laut Skript sinnvoll?","Nachfragen, wie der andere die Botschaft verstanden hat",["Dasselbe lauter wiederholen","Dem anderen sagen, er habe es falsch verstanden","Das Thema sofort wechseln"],"Wiederholungen bringen wenig. Besser nachfragen oder einräumen, sich unklar ausgedrückt zu haben."],
+[1,"Im Eisbergmodell der Kommunikation liegt unter der Wasserlinie …","die Beziehungsebene",["die Sachebene","der Appell","die Fachsprache"],"Sachebene sichtbar, Beziehungsebene (Sympathie, Antipathie, Neid, Achtung) darunter."],
+[1,"Jemand sagt „Ja, das hört sich gut an.“ Welcher Kanal wird bevorzugt?","Der auditive Kanal",["Der visuelle Kanal","Der gefühlsorientierte Kanal","Kein bestimmter Kanal"],"Visuell: „sieht gut aus“, auditiv: „hört sich gut an“, gefühlsorientiert: „fühlt sich gut an“."],
+[1,"Ein gesenkter Blick kann laut Skript signalisieren …","Unterwürfigkeit oder Schuldgefühle",["Dominanz","Desinteresse am Thema","Besonders hohe Aufmerksamkeit"],"Dominante Menschen fixieren oft, ein gesenkter Blick zeigt eher Unterwürfigkeit oder Schuld."],
+[2,"Welche ist keine der vier Seiten einer Nachricht?","Machtebene",["Sachebene","Selbstoffenbarung","Appell"],"Die vier Seiten: Sache, Selbstoffenbarung, Beziehung, Appell."],
+[2,"Welche Frage gehört zur Beziehungsseite?","Was halte ich von dir und wie stehen wir zueinander?",["Worüber informiere ich?","Was gebe ich von mir kund?","Wozu möchte ich dich veranlassen?"],"Das ist die Beziehungsebene."],
+[2,"„Da ist was Grünes im Essen.“ – „Du bist eine schlechte Köchin!“ Welches Ohr hört hier?","Das Beziehungsohr",["Das Sachohr","Das Appellohr","Das Selbstoffenbarungsohr"],"Der Empfänger bezieht die Aussage auf sich und die Beziehung."],
+[2,"Was ist eine Schwäche des Sachohrs?","Es wirkt unpersönlich, gefühllos und kühl",["Es ist leicht gekränkt","Es ist suggestibel","Es ist nicht selbstkritisch"],"Stärke: sachlich, neutral, ergebnisorientiert. Schwäche: unpersönlich, gefühllos, kühl."],
+[2,"Zu welcher Ebene gehört bei der Gesprächsvorbereitung das Maximal- und Minimalziel?","Appell",["Sache","Beziehung","Selbstoffenbarung"],"Appell: Maximal-/Minimalziel, Wünsche und Bitte."],
+[3,"Wann setzt man offene Fragen eher ein?","Eher zu Beginn eines Gesprächs",["Eher am Ende","Nur bei Konflikten","Nie bei Klienten"],"Offene W-Fragen holen Informationen ein und stellen Kontakt her."],
+[3,"Was ist die Wirkung geschlossener Fragen?","Sie stellen Verbindlichkeit her und halten das Gespräch kurz",["Sie liefern viele Hintergründe","Sie fördern freies Erzählen","Sie bauen Vertrauen auf"],"Geschlossene Fragen bereiten eine Entscheidung vor und passen eher ans Gesprächsende."],
+[3,"Was ist Paraphrasieren?","Die Aussage mit eigenen Worten wiederholen",["Die Gefühle des Gegenübers spiegeln","Nur „hm“ und „ah“ sagen","Den Gesprächspartner unterbrechen"],"Das Spiegeln der Gefühle heißt Verbalisieren."],
+[3,"Was bedeutet Verbalisieren beim aktiven Zuhören?","Die Gefühle des Gegenübers spiegeln",["Den Inhalt kürzen","Ratschläge geben","Fachbegriffe erklären"],"Beispiel: „Das ärgert Sie.“"],
+[3,"Was gehört in Phase 2 des Gesprächsleitfadens?","Eigener Standpunkt als Ich-Botschaft und Standpunkt des anderen",["Begrüßung","Vereinbarung treffen","Positiver Abschluss"],"Phasen: 1 Begrüßung/Atmosphäre, 2 Standpunkte, 3 Dialog und Vereinbarung, 4 positiver Abschluss."],
+[3,"Warum sollte man zu Beginn die verfügbare Zeit nennen?","Es steuert das Gespräch, ohne unhöflich zu wirken",["Es verkürzt jedes Gespräch","Es ersetzt die Begrüßung","Es gibt dem Betreuer mehr Macht"],"Es hilft auch den Klienten, sich zu strukturieren."],
+[4,"Welche Reaktion löst eine Du-Botschaft typischerweise aus?","Widerstand und Rechtfertigung",["Nachdenklichkeit","Chance zur Klärung","Betroffenheit"],"Du-Botschaften werden als Vorwürfe erlebt und mit Gegenvorwürfen gekontert."],
+[4,"Welche Aussage ist laut Skript eine echte Ich-Botschaft?","„Ich bin mir nicht sicher, ob ich mich richtig ausgedrückt habe.“",["„Ich fühle mich missverstanden.“","„Ich habe das Gefühl, du hörst nicht zu.“","„Ich finde, du bist unfair.“"],"Eine echte Ich-Botschaft drückt nur eigene Wahrnehmung, Gefühle und Bedürfnisse aus."],
+[4,"Wie lauten die vier Schritte des richtigen Kritisierens laut Skript?","Beobachten, fühlen, Bedürfnis nennen, Wunsch äußern",["Loben, tadeln, fordern, kontrollieren","Fragen, schweigen, erklären, wiederholen","Zuhören, spiegeln, deuten, beraten"],"Dabei konkret bleiben und Verallgemeinerungen wie „immer“ vermeiden."],
+[4,"Was zeigt der Feedback-Burger zwischen positivem Anfang und Wunsch?","Wahrnehmung und Wirkung",["Nur die Wirkung","Ein zweites Lob","Die Konsequenzen"],"Reihenfolge: positiver Anfang, Wahrnehmung, Wirkung, Wunsch, positives Ende."],
+[4,"Was ist ein „Pseudo-Gefühl“?","„Ich habe das Gefühl, du hörst mir gar nicht zu.“",["„Ich bin verärgert.“","„Ich bin traurig.“","„Ich fühle mich unwohl.“"],"Es beschreibt das Verhalten des anderen und lässt sich bestreiten. Ein echtes Gefühl kann niemand absprechen."],
+[4,"Welches Beispiel steht im Skript für einen Sachkonflikt?","Streit zwischen Antragsteller und Krankenkasse",["Man mag eine Kollegin nicht","Ein Klient fühlt sich nicht gemocht","Zwei Kollegen sind sich unsympathisch"],"Sachkonflikt: unterschiedliche Ansicht in der Sache. Beziehungskonflikt: Störung zwischen den Personen."],
+[4,"Welche Feedbackregel nennt das Skript?","Kritik nicht öffentlich äußern und an die Betroffenen richten",["Kritik im Meeting vor allen","Möglichst abgeschwächt formulieren","Nur über Abwesende sprechen"],"Öffentliche Kritik ist verheerend für das Selbstwertgefühl."],
+[5,"Welche Stufe steht bei Maslow ganz unten?","Physiologische Bedürfnisse",["Selbstverwirklichung","Wertschätzung","Zugehörigkeit"],"Essen, Schlafen, Trinken bilden die Basis der Pyramide."],
+[5,"Was gehört nicht zu den vier Grundbedürfnissen nach Grawe?","Selbstverwirklichung",["Bindung","Kontrolle und Orientierung","Selbstwerterhöhung und Selbstwertschutz"],"Grawe: Bindung, Kontrolle/Orientierung, Lustgewinn/Unlustvermeidung, Selbstwert. Selbstverwirklichung ist Maslow."],
+[5,"Was geschieht laut Skript, wenn man Gefühle vermeidet?","Die unangenehmen Gefühle werden verstärkt",["Sie verschwinden sofort","Sie werden angenehm","Sie bleiben unverändert"],"Hilfreich ist das Wissen um Emotionstoleranz: Gefühle kommen und gehen."],
+[5,"Welche Aussage ist eine Wahrnehmung (nicht Interpretation)?","„Ich sehe, dass du mich nicht ansiehst.“",["„Du hörst mir nicht zu.“","„Du siehst traurig aus.“","„Du bist gelangweilt.“"],"Wahrnehmung beschreibt Beobachtbares, Interpretation deutet es."],
+[5,"Welcher Gedanke stammt von Viktor Frankl?","Zwischen Reiz und Reaktion liegt ein Raum, in dem wir wählen können",["Man kann nicht nicht kommunizieren","Keine Methode ersetzt persönliche Wärme","Bescheidenheit rührt vom Bewusstsein der Macht"],"In diesem Raum liegen Entwicklung und Freiheit."],
+[5,"Was bedeutet die Meta-Ebene bei Gedanken?","Distanzierung von den eigenen Gedanken",["Identifikation mit den Gedanken","Unterdrückung der Gedanken","Verdrängung der Gefühle"],"Objekt-Ebene = Identifikation, Meta-Ebene = Distanzierung."],
+[5,"Was ist im Kernquadrat das „Zu viel des Guten“ der Kernqualität Belastbarkeit?","Aufopferung",["Selbstachtsamkeit","Vulnerabilität","Gelassenheit"],"Kernqualität Belastbarkeit, Falle Aufopferung, Herausforderung Selbstachtsamkeit."],
+[5,"Welche Reaktion auf emotionale Belastung ist ungünstig?","Ratschlag: „Entspann dich einfach.“",["Zuhören und Gefühle benennen","Akzeptanz zeigen","Verständnis äußern"],"Ungünstig sind auch Themenwechsel, Dramatisieren und Schuldzuweisung."],
+[6,"Was ist der erste Schritt der ressourcenorientierten Gesprächsführung?","Problem benennen",["Konkrete Schritte planen","Erfolge auswerten","Hoffnung stärken"],"Danach folgen: Bewältigungsstrategien würdigen, Ausnahmen erfragen usw."],
+[6,"Welcher Satz ist ein Don’t?","„Da müssen Sie jetzt wohl durch.“",["„Habe ich Sie richtig verstanden, dass …?“","„Ich kann gut verstehen, dass …“","„Wie sehen Sie das?“"],"Bagatellisierung gehört zu den Don’ts."],
+[6,"Welches Beispiel ist umschreibendes Zuhören?","„Habe ich Sie richtig verstanden, dass …?“",["„Das habe ich Ihnen schon erklärt.“","„Immer müssen Sie …“","„So wird das nichts.“"],"Es prüft das Verständnis und gibt Raum zur Korrektur."],
+[6,"Was ist bei Antriebslosigkeit ein Do?","Mit „Baby Steps“ arbeiten",["Unter Druck setzen","Dem Klienten viel abnehmen","Vorwürfe machen"],"Auch ärztliche Abklärung vorschlagen und eigenen Ärger wahrnehmen."],
+[6,"Was ist beim Klagen ein Don’t?","Beschwichtigende Floskeln wie „So schlimm ist es doch gar nicht“",["Problematisches Verhalten konkret benennen","Professionelle Distanz wahren","Handlungsspielräume aufzeigen"],"Auch Verantwortungsfalle und Gegenaggression vermeiden."],
+[6,"Wie geht man laut Skript mit Schweigen um?","Das Schweigen lesen und selbst abwarten",["Sofort das Thema wechseln","Komplizierte Fragen stellen","Ärgerlich reagieren"],"Beweggründe herausfinden und einfache Fragen stellen."],
+[6,"Was gehört bei Hausbesuchen zu „Bitte nicht“ (Deeskalation)?","Sich einem bewaffneten Täter nähern",["Offene Fragen stellen","Fluchtwege einplanen","Ruhig und empathisch wirken"],"Nie einem bewaffneten Täter nähern, keine Drohungen aussprechen."],
+[7,"Wann spricht man von Machtmissbrauch?","Wenn Handlungsmacht negativ genutzt wird",["Sobald jemand Macht hat","Wenn jemand fachlich überlegen ist","Wenn Entscheidungen getroffen werden"],"Macht definiert Handlungsmöglichkeiten, Missbrauch ist ihre negative Nutzung."],
+[7,"Was gehört nicht zum Risikomanagement laut Skript?","Strenge Kontrolle der Klienten",["Achtsamkeit","Transparenz","Super- und Intervision"],"Achtsamkeit, Bescheidenheit, Transparenz, Verantwortung und reflektierende Gespräche."],
+[7,"Wie sieht das Skript die ideale Autorität eines Berufsbetreuers?","Fachliche Autorität verbunden mit hoher persönlicher und sozialer Kompetenz",["Nur fachliche Kompetenz","Nur persönliche Ausstrahlung","Formale Position"],"Fachliche Kompetenz ist notwendig, aber nicht hinreichend."],
+[7,"Wie beschreibt das Skript die Beziehung zwischen Betreuer und Klient?","Formal asymmetrisch",["Rechtlich gleichrangig","Rein freundschaftlich","Hierarchiefrei"],"Darum ist vertiefte Selbst- und Machtreflexion unverzichtbar."],
+[7,"Woher rührt laut Cézanne Bescheidenheit?","Vom Bewusstsein der eigenen Macht und Begrenztheit",["Von Misserfolgen","Von fehlendem Wissen","Von Anweisungen"],"Zitat im Skript."],
+[8,"Was ist Übertragung?","Unbewusstes Übertragen von Gefühlen und Erwartungen aus früheren Beziehungen auf das Gegenüber",["Bewusste Weitergabe von Informationen","Die Gefühle des Betreuers","Das Spiegeln von Gefühlen"],"Die Gefühle des Betreuers heißen Gegenübertragung."],
+[8,"Wovon wird die Gegenübertragung wesentlich beeinflusst?","Lebensgeschichte, Persönlichkeitsstruktur und Geschlecht",["Alter, Beruf und Einkommen","Ausbildung, Erfahrung und Gehalt","Wohnort, Familienstand und Hobbys"],"So die Hinweise im Skript."],
+[8,"Was nimmt man nach dem Eisbergmodell an, wenn kein rationaler Grund erkennbar ist?","Das Hauptmotiv ist unbewusst und emotional",["Der Klient lügt","Es steckt böse Absicht dahinter","Es ist Zufall"],"Hinweis 1 zur Wahrnehmung von Übertragung."],
+[8,"Wann werden die Persönlichkeitsstrukturanteile wesentlich geprägt?","In den ersten sechs Lebensjahren",["In der Pubertät","Im Erwachsenenalter","Im Berufsleben"],"Entscheidend sind die primären Bezugspersonen."],
+[8,"Wie wirken stärker depressiv strukturierte Betreuer?","Sie umsorgen Klienten zu sehr",["Sie bleiben distanziert","Sie lassen sich bejubeln","Sie vermeiden Risiken"],"Schizoid: Distanz, auch wenn Nähe nötig wäre. Narzisstisch: sich bejubeln lassen."],
+[8,"Welcher Grundkonflikt gehört zur schizoiden Struktur?","Nähe und Distanz",["Autonomie und Abhängigkeit","Aggression und Anpassung","Planung und Chaos"],"Depressiv: Autonomie/Abhängigkeit, zwanghaft: Aggression/Anpassung, hysterisch: Planung/Chaos."],
+[8,"Abwehrmechanismen sind …","unbewusst",["willentlich gesteuert","immer pathologisch","nur bei Kranken zu finden"],"Sie sind alltäglich und schützen das Selbstwertgefühl, können aber einschränken."],
+[8,"Ein Mann wird vom Chef gedemütigt und lässt die Wut zu Hause an Partner und Kindern aus. Das ist …","Verschiebung",["Projektion","Rationalisierung","Regression"],"Die Wut richtet sich gegen Ersatzobjekte statt gegen den Verursacher."],
+[8,"„Ich wollte da sowieso nicht hin“ nach einer Absage ist ein Beispiel für …","Rationalisierung",["Konversion","Spaltung","Intellektualisierung"],"Vernünftig klingende Argumente schützen vor Gefühlsschmerz."],
+[8,"Was ist Spaltung?","Objekte oder Personen werden nur in „Gut“ und „Böse“ eingeteilt",["Gefühle werden körperlich ausgedrückt","Eigene Eigenschaften werden anderen zugeschrieben","Rückkehr zu kindlichem Verhalten"],"Häufig bei Persönlichkeitsstörungen wie Borderline."],
+[9,"Was bedeutet Ambiguitätstoleranz?","Widersprüchliche Informationen und unklare Ergebnisse als Teil des Lebens akzeptieren",["Immer eine einfache Antwort suchen","Konflikten ausweichen","Alle Meinungen teilen"],"Einfache Antworten übersehen mögliche Lösungen komplexer Probleme."],
+[9,"Seit wann ist diversitätssensible Kommunikation Teil des Sachkundenachweises?","Seit dem 01.01.2023",["Seit dem 01.01.2000","Seit dem 01.01.2018","Noch gar nicht"],"Anlage zu § 3 Abs. 4 BtRegV."],
+[9,"Wann muss der Betreuer Wünschen nach § 1821 Abs. 3 BGB nicht entsprechen?","Bei erheblicher Gefährdung ohne Einsicht des Betreuten oder bei Unzumutbarkeit",["Wenn der Wunsch ungewöhnlich ist","Wenn das Gericht widerspricht","Wenn der Wunsch Geld kostet"],"Zwei Fälle: erhebliche Gefährdung, die der Betreute krankheits- oder behinderungsbedingt nicht erkennt, oder Unzumutbarkeit."],
+[9,"Was gilt für Person und Handeln des Betreuten?","Der Mensch wird bedingungslos akzeptiert, sein Handeln kann abgelehnt werden",["Beides wird gleich bewertet","Beides muss unterstützt werden","Beides wird abgelehnt"],"Beispiel: Ein Betreuter mit undemokratischen Einstellungen wird als Mensch wertgeschätzt, die Einstellung nicht."],
+[9,"Was fordert Art. 12 Abs. 3 UN-BRK?","Zugang zu der Unterstützung, die bei der Ausübung der Rechts- und Handlungsfähigkeit nötig ist",["Ersetzung der Entscheidung durch Dritte","Abschaffung der Betreuung","Gleichstellung ohne Unterstützung"],"Das Betreuungsrecht ist an diesem Unterstützungsgedanken ausgerichtet."],
+[9,"Welche Formulierung ist diversitätssensibel?","„Essen reichen“ statt „füttern“",["„Pflegefall“","„Greis“","„Windel“"],"Besser auch: Mensch mit Assistenzbedarf, Inkontinenzschutz."],
+[9,"Was ist das „Herzstück“ der Wunschermittlung?","Die Besprechungspflicht nach § 1821 Abs. 5 BGB",["Die Aktenführung","Die Vermögensübersicht","Das Betreuungsgutachten"],"Berichtspflichten mit Wunschdarstellung sichern das ab (§ 1863 BGB)."],
+[9,"Welche Grundhaltung nennt das Skript mit Bezug auf Rogers?","Kongruenz, Akzeptanz und Empathie",["Distanz, Kontrolle und Autorität","Neutralität, Strenge und Fürsorge","Anpassung, Gehorsam und Fleiß"],"Dazu Bernes „Ich bin OK, du bist OK“."],
+[9,"Was ist die Vision von Diversität und Inklusion?","Jede Person wird eingebunden, ohne große Anpassungsleistungen zu verlangen",["Alle passen sich der Mehrheit an","Unterschiede werden vermieden","Nur Menschen mit Behinderung werden gefördert"],"Die Gesellschaft muss entsprechende Bedingungen schaffen."],
+[10,"Was beinhaltet interkulturelle Kompetenz nicht?","Die eigenen Wertvorstellungen aufzugeben",["Perspektivwechsel","Nachfragen bei Nichtwissen","Reflexion der eigenen Prägung"],"Sie bedeutet auch nicht, alles über die Kultur des Betreuten zu wissen."],
+[10,"Was sind „Hotwords“?","Kulturell aufgeladene Begriffe wie Ehre, Heimat oder Ehe",["Fachbegriffe der Medizin","Beleidigungen","Modewörter"],"Ihre Bedeutung steht kaum in Wörterbüchern."],
+[10,"Wer berät Migranten unter 27 Jahren (JMD/MBE)?","Der Jugendmigrationsdienst (JMD)",["Die Migrationsberatung für Erwachsene (MBE)","Das Amtsgericht","Das Sozialamt"],"MBE ist für alle anderen Migranten zuständig."],
+[10,"Wer sollte nicht als Übersetzer eingesetzt werden?","Minderjährige Kinder",["Zertifizierte Übersetzer","Kulturelle Mittler","Geschulte Dolmetscher"],"Angehörige und Bekannte nur im Notfall. Selbst zu übersetzen ist nicht zu empfehlen."],
+[10,"Was gilt in Leichter Sprache?","Für gleiche Dinge immer dasselbe Wort benutzen",["Möglichst abwechslungsreiche Wörter","Lange verschachtelte Sätze","Konjunktive verwenden"],"Beispiel: immer „Tablette“, nicht zwischen Tablette und Pille wechseln."],
+[10,"Wie wirkt direkter Blickkontakt in manchen asiatischen und afrikanischen Kulturen?","Gegenüber einer Autoritätsperson kann er respektlos wirken",["Immer als Zeichen von Ehrlichkeit","Als Einladung zum Gespräch","Neutral"],"Als Autoritätsperson wird der rechtliche Betreuer oft wahrgenommen."],
+[10,"Welche vier Tiefenstrukturen der Kultur nennt das Skript?","Werte, Rituale, Symbole, Identifikationsfiguren",["Sprache, Essen, Kleidung, Musik","Politik, Wirtschaft, Recht, Religion","Familie, Arbeit, Freizeit, Heimat"],"Darüber hinaus: geografische, religiöse, soziokulturelle Bezugsgrößen."],
+[10,"Warum müssen auch Tabuthemen besprochen werden?","Damit das Gericht Entscheidungen nachvollziehen kann (Wunschdarstellung)",["Damit der Betreuer mehr erfährt","Damit Konflikte vermieden werden","Weil es Vorschrift für Ärzte ist"],"Berichtspflichten mit Wunschdarstellung, § 1863 BGB."],
+[10,"Was ist die erste Phase interkulturellen Lernens (Grosch/Leenen)?","Die Kulturgebundenheit menschlichen Verhaltens erkennen und akzeptieren",["Konflikte praktisch lösen","Fremde Kulturstandards übernehmen","Deutungswissen erweitern"],"Es gibt insgesamt sieben Phasen."]
+,[11,"Wie lauten die fünf Phasen des allgemeinen Gesprächsverlaufs nach Benien in der richtigen Reihenfolge?","Anfangs-, Informations-, Argumentations-, Beschluss-, Abschlussphase",["Anfangs-, Argumentations-, Informations-, Abschluss-, Beschlussphase","Informations-, Anfangs-, Beschluss-, Argumentations-, Abschlussphase","Anfangs-, Beschluss-, Informations-, Argumentations-, Abschlussphase"],"Aus der Ergänzungsliteratur, Kapitel 4.1. Die Phasen sind idealtypisch, Wiederholungen und Sprünge sind normal."],
+[11,"Wie viele Phasen hat das Klärungsgespräch als Basismodell nach Thomann und Schulz von Thun?","Sieben",["Drei","Fünf","Neun"],"Von Kontakt- und Situationsklärung bis zum Abschluss der Situation."],
+[11,"Was geschieht in der ersten Phase des Klärungsgesprächs?","Kontakt- und Situationsklärung (Joining, Framing, Arbeitsbündnis)",["Gestalteter Dialog","Vereinbarungen und Hausaufgaben","Vertiefung der Gefühle"],"Der Moderator verhindert einen vorschnellen Einstieg in die Klärungsarbeit."],
+[11,"Was ist der erste von fünf Schritten der Gesprächsvorbereitung?","Kontext, Vorgeschichte und Anlass klären",["Gesprächsform wählen","Zur Besprechung einladen","Perspektivenwechsel"],"Danach: Selbstklärung, Perspektivenwechsel, Gesprächsform und Ablauf, Rahmen klären und einladen."],
+[11,"Was meint der Perspektivenwechsel in der Gesprächsvorbereitung?","Die Identifikation mit dem Gesprächspartner",["Die Wahl eines anderen Gesprächsortes","Den Gesprächsleiter zu wechseln","Das Thema zu verschieben"],"Schritt 3 der Vorbereitung."],
+[11,"Was bedeutet „doppelte Stimmigkeit“ (Schulz von Thun)?","Das Gespräch passt zur Person und zur Situation",["Beide Gesprächspartner sind gleich stark","Sach- und Beziehungsebene sind ausgeglichen","Das Gespräch hat zwei Ziele"],"Es muss klar sein, wie es kommt, welchen Sinn es macht und warum gerade ich, mit dir, dieses Thema bespreche."],
+[11,"Wie soll Offenheit im Gespräch nach Benien sein?","Selektiv authentisch",["Immer völlig ungefiltert","Möglichst verschlossen","Rein taktisch"],"Zum Beispiel erst zuhören und Informationen einholen, bevor man eigene Betroffenheit äußert."],
+[11,"Woran setzt die lösungsorientierte Gesprächsführung an?","An positiven Erfahrungen, Ressourcen und Ausnahmen vom Problem",["An einer genauen Analyse der Problemursachen","An Sanktionen und Konfrontation","An Diagnosen"],"Sie stärkt Entwicklungswünsche und Selbstwirksamkeit."],
+[11,"Für welche Gesprächspartner ist die motivierende Gesprächsführung besonders gedacht?","Für Menschen mit wenig Änderungsmotivation",["Für Gruppen mit Teamkonflikten","Für Kinder","Für Angehörigengespräche"],"Sie geht auf Miller und Rollnick zurück und baut Motive systematisch auf."],
+[11,"Welche Grenze nennt die Ergänzungsliteratur für die lösungsorientierte Gesprächsführung?","Im Zwangskontext stößt sie schnell an ihre Grenzen",["Sie funktioniert nur in Gruppen","Sie braucht ein Gutachten","Sie ist nur für Jugendliche geeignet"],"Strikte Ressourcenorientierung kann bei geringer Einsicht Verleugnung verstärken."]
+];
+
+/* Karten: [Station, Vorderseite, Rückseite] */
+const CD=[
+[1,"Erste Regel nach Watzlawick","Man kann nicht nicht kommunizieren. Auch Schweigen sagt etwas aus."],
+[1,"Zweite Regel nach Watzlawick","Jede Nachricht wird vom Empfänger interpretiert."],
+[1,"Dritte Regel nach Watzlawick","Zwischen Gesendetem und Empfangenem kann ein Unterschied bestehen. Die Wirkung zählt, nicht die Absicht."],
+[1,"Vierte Regel nach Watzlawick","Bei Missverständnissen nicht wiederholen, sondern nachfragen, wie die Botschaft verstanden wurde."],
+[1,"Was gilt auf Beziehungs- und Sachebene?","Mit gutem Kontakt auf der Beziehungsebene ist eine Einigung in der Sache leichter oder Uneinigkeit leichter zu ertragen."],
+[1,"Kommunikativer Lieblingskanal","Visuell, auditiv oder gefühlsorientiert. Wer sich auf den Kanal des anderen einstellt, schafft mehr Übereinstimmung."],
+[2,"Vier Seiten einer Nachricht","Sachebene, Selbstoffenbarung, Beziehungsebene, Appell."],
+[2,"Vier Ohren","Sachohr, Selbstoffenbarungsohr, Beziehungsohr, Appellohr."],
+[2,"Selbstoffenbarung (Sender)","Was gebe ich von mir selbst kund?"],
+[2,"Appellohr: Stärke und Schwäche","Stärke: hilfsbereit, lösungsorientiert. Schwäche: nicht bedürfnisorientiert, suggestibel."],
+[2,"Beziehungsohr: Stärke und Schwäche","Stärke: sensibel, feinfühlig, menschlich. Schwäche: verletzlich, leicht gekränkt, nimmt persönlich."],
+[2,"Selbstoffenbarungsohr: Stärke und Schwäche","Stärke: einfühlsam, verständnisvoll. Schwäche: nicht selbstkritisch."],
+[2,"Vorbereitung auf der Appellebene","Maximal- und Minimalziel, Wünsche und Bitte."],
+[3,"Offene Fragen","W-Fragen. Informationen einholen, Kontakt herstellen, Hintergründe erfahren. Eher zu Beginn."],
+[3,"Geschlossene Fragen","Ja/Nein-Antwort. Verbindlichkeit herstellen, Gespräch kurz halten. Eher am Ende."],
+[3,"Paraphrasieren","Die Aussage mit eigenen Worten wiederholen."],
+[3,"Verbalisieren","Die Gefühle des Gegenübers spiegeln."],
+[3,"Techniken des aktiven Zuhörens","Bestätigungslaute, Paraphrasieren, Zusammenfassen, Verbalisieren, Nachfragen."],
+[3,"Gesprächsleitfaden in vier Phasen","1 Begrüßung/Atmosphäre. 2 Eigener Standpunkt (Ich-Botschaft), Standpunkt des anderen. 3 Dialog, Vereinbarung. 4 Positiver Abschluss."],
+[3,"Sechs Schritte fördernden Gesprächsverlaufs","Grundhaltung, nonverbales Zuhören, aktives Zuhören, Gefühle ansprechen, Wünsche herausarbeiten, Zusammenfassen."],
+[4,"Wirkung von Du-Botschaften","Widerstand, Rechtfertigung, Schuld, Scham, Verletzung, Ärger."],
+[4,"Wirkung von Ich-Botschaften","Betroffenheit, Nachdenklichkeit, Chance zur Klärung."],
+[4,"Vollständige Ich-Botschaft","Sichtweise schildern, Auswirkungen beschreiben, Gefühle benennen, Sicht des anderen erfragen, Wünsche formulieren."],
+[4,"Richtig kritisieren","Beobachten, fühlen, Bedürfnis formulieren, Wunsch äußern."],
+[4,"Feedback-Burger","Positiver Anfang, Wahrnehmung, Wirkung, Wunsch, positives Ende."],
+[4,"Feedback-Prinzip: vier Fragen","Näher am Ziel? Qualität der Vorgehensweise? Qualität der Arbeitsbeziehung? Was müsste besser werden?"],
+[4,"Beziehungs- und Sachkonflikt","Beziehungskonflikt: Störung zwischen Personen. Sachkonflikt: unterschiedliche Ansicht in der Sache. Oft beides."],
+[5,"Maslow: Reihenfolge der Pyramide","Physiologisch, Sicherheit und Kontrolle, Zugehörigkeit, Wertschätzung, Selbstverwirklichung."],
+[5,"Grawe: Grundbedürfnisse","Bindung, Kontrolle und Orientierung, Lustgewinn/Unlustvermeidung, Selbstwerterhöhung/Selbstwertschutz."],
+[5,"Emotionstoleranz","Gefühle kommen und gehen. Vermeidung verstärkt unangenehme Gefühle."],
+[5,"Bewusstheitsrad (Miller)","Wahrnehmung, Interpretation (Gedanken), Gefühle, Absichten, Verhalten."],
+[5,"Wahrnehmung oder Interpretation? „Du siehst traurig aus.“","Interpretation. Wahrnehmung wäre: „Ich sehe, dass du weinst.“"],
+[5,"Frankl-Zitat","„Zwischen Reiz und Reaktion liegt ein Raum …“ In ihm liegt die Macht zur Wahl der Reaktion."],
+[5,"Objekt-Ebene und Meta-Ebene","Objekt-Ebene: Identifikation mit Gedanken. Meta-Ebene: Distanzierung von ihnen."],
+[5,"Kernquadrat","Kernqualität, Falle (zu viel des Guten), positives Gegenteil (Herausforderung), Allergie."],
+[6,"Ressourcenorientierte Gesprächsführung: acht Schritte","Problem benennen, Strategien würdigen, Ausnahmen erfragen, Sinn des Ziels, Hoffnung stärken, Realisierbarkeit, konkrete Schritte, Erfolge auswerten."],
+[6,"Dos der Kommunikation (Auswahl)","Namentlich ansprechen, offene Fragen, Ich-Botschaften, aufmerksam und umschreibend zuhören, Wünsche herausarbeiten, Gefühle ansprechen, Verständnis zeigen."],
+[6,"Don’ts der Kommunikation","Du-Botschaften und Pauschalierungen, Bagatellisieren, Verurteilen, Belehren, Unterbrechen."],
+[6,"Antriebslosigkeit: Do","„Baby Steps“, ärztliche Abklärung vorschlagen, eigenen Ärger wahrnehmen."],
+[6,"Klagen: Do","Distanz wahren, Verhalten konkret benennen, Handlungsspielräume aufzeigen."],
+[6,"Schweigen: Do","Schweigen lesen, selbst abwarten, einfache Fragen stellen."],
+[6,"Aggressives Verhalten: Do","Innere Distanz herstellen, klärend konfrontieren, Grenzen wahren, nonverbale Sicherheit."],
+[7,"Machtmissbrauch","Negative Nutzung der Handlungsmacht."],
+[7,"Risikomanagement bei Macht","Achtsamkeit, Bescheidenheit, Transparenz, Verantwortung, Super- und Intervision."],
+[7,"Zwei Formen der Autorität","Fachliche Kompetenz und hohe persönliche/soziale Kompetenz."],
+[7,"Besonderheit der Betreuungsbeziehung","Sie ist formal asymmetrisch. Selbst- und Machtreflexion ist deshalb unverzichtbar."],
+[7,"Doppeltes Mandat","Der Spagat zwischen Klient und Institution. Einseitige Parteilichkeit vermeiden."],
+[8,"Übertragung","Unbewusstes Übertragen von Gefühlen und Erwartungen aus früheren Beziehungen auf das Gegenüber."],
+[8,"Gegenübertragung","Gefühle und Handlungsimpulse beim Betreuer. Abhängig von Lebensgeschichte, Persönlichkeitsstruktur und Geschlecht."],
+[8,"Häufige Übertragungsvarianten","Eltern-, Geschlechter-, erotische und Geschwisterübertragung."],
+[8,"Eisbergmodell (Hinweis 1)","Ohne rationalen Grund ist das Hauptmotiv unbewusst und emotional."],
+[8,"Persönlichkeitsstrukturen","Narzisstisch, schizoid, depressiv, zwanghaft, phobisch, hysterisch. Jeder hat alle Anteile, geprägt in den ersten sechs Lebensjahren."],
+[8,"Grundkonflikt: narzisstisch","Selbstwertgefühl und Minderwertigkeit."],
+[8,"Grundkonflikt: depressiv","Autonomie und Abhängigkeit."],
+[8,"Grundkonflikt: zwanghaft","Aggression und Anpassung."],
+[8,"Grundkonflikt: phobisch","Angst und Wagnis."],
+[8,"Grundkonflikt: hysterisch","Planung und Chaos."],
+[8,"Abwehr","Unbewusster Versuch, Angst und unangenehme Gefühle zu verringern. Alltäglich, schützt Selbstwert, kann aber einschränken."],
+[8,"Projektion","Eigene abgelehnte Eigenschaften werden in anderen gesehen."],
+[8,"Verschiebung","Wut oder Frust richten sich gegen Ersatzobjekte statt gegen den Verursacher."],
+[8,"Rationalisierung","Vernünftige Argumente schützen vor Gefühlsschmerz."],
+[8,"Reaktionsbildung","Das Gegenteil des Gefürchteten wird gelebt oder bekämpft."],
+[8,"Konversion","Gefühle und Konflikte als körperliche Symptome."],
+[8,"Intellektualisierung","Theoretisch über Gefühle reden, um sie nicht zu spüren."],
+[8,"Regression","Rückfall in frühere, kindliche Verhaltensweisen."],
+[8,"Wendung gegen die eigene Person","Aggression richtet sich gegen sich selbst, häufig bei Depression."],
+[9,"Ambiguitätstoleranz","Widersprüchliche oder unklare Situationen als Teil des Lebens akzeptieren."],
+[9,"Diversitätskompetenz","Eigene Positionierung reflektieren, Ambiguitätstoleranz entwickeln und angemessene Kommunikationsstrategien einsetzen."],
+[9,"Rechtsgrundlage der Sachkunde","Anlage zu § 3 Abs. 4 BtRegV: seit 01.01.2023 ist diversitätssensible Kommunikation Teil des Sachkundenachweises."],
+[9,"Art. 3 Abs. 3 S. 2 GG","Niemand darf wegen seiner Behinderung benachteiligt werden."],
+[9,"Art. 12 Abs. 3 UN-BRK","Zugang zu Unterstützung bei der Ausübung der Rechts- und Handlungsfähigkeit."],
+[9,"§ 1821 BGB","Der Wunsch des Betreuten hat Vorrang. Besprechungspflicht in Abs. 5, mutmaßlicher Wille in Abs. 2."],
+[9,"§ 1821 Abs. 3 BGB","Wünschen nicht entsprechen bei erheblicher Gefährdung ohne Einsicht des Betreuten oder bei Unzumutbarkeit."],
+[9,"§ 1863 BGB","Berichtspflichten mit Wunschdarstellung."],
+[9,"Haltung im Modul","Wertschätzung, Akzeptanz, Offenheit. Person und Handeln trennen."],
+[9,"Statt „Pflegefall“","Mensch mit Assistenzbedarf."],
+[9,"Statt „füttern“","Essen reichen."],
+[9,"Statt „sozial schwach“ / „bildungsfern“","Menschen mit Armutserfahrung, von Armut betroffen."],
+[10,"Interkulturelle Kompetenz","Fähigkeit, angemessen mit Menschen anderer kultureller Prägung zu interagieren."],
+[10,"Vier Tiefenstrukturen der Kultur","Werte, Rituale, Symbole, Identifikationsfiguren."],
+[10,"Hotwords","Kulturell aufgeladene Begriffe wie Ehe, Ehre, Heimat, Liebe."],
+[10,"Hotspots","Situationen mit erhöhtem Konfliktpotenzial, z. B. Begrüßung und Anrede."],
+[10,"Regeln der Leichten Sprache","Kurze Sätze, schwere Wörter erklären, immer dasselbe Wort für dieselbe Sache, kein Dialekt, keine Redewendungen."],
+[10,"Übersetzung: Was ist tabu?","Keine minderjährigen Kinder. Angehörige nur im Notfall. Selbst übersetzen ist nicht zu empfehlen."],
+[10,"JMD und MBE","JMD: Jugendmigrationsdienst (unter 27). MBE: Migrationsberatung für Erwachsene."],
+[10,"Kulturelle Mittler","Oft ehrenamtlich, geschult, übersetzen und erklären kulturelle Unterschiede."],
+[10,"Nähe und Distanz kulturell","Deutschland etwa eine Armlänge. Andere Kulturen oft mehr Nähe. Zurückweichen kann als Ablehnung wirken."],
+[10,"Warum Tabuthemen ansprechen?","Das Gericht muss Entscheidungen nachvollziehen können (Wunschdarstellung)."]
+,[11,"Fünf Phasen des Gesprächsverlaufs (Benien)","Anfangs-, Informations-, Argumentations-, Beschluss- und Abschlussphase."],
+[11,"Sieben Phasen des Klärungsgesprächs","Kontakt/Situation, Thema, Sichtweisen, Dialog, Vertiefung oder Problemlösung, Vereinbarungen, Abschluss."],
+[11,"Gesprächsvorbereitung in fünf Schritten","Kontext klären, Selbstklärung, Perspektivenwechsel, Gesprächsform und Ablauf wählen, Rahmen klären und einladen."],
+[11,"Doppelte Stimmigkeit","Das Gespräch muss zur Person und zur Situation passen (Schulz von Thun)."],
+[11,"Selektiv authentisch","Nicht ungeschützt offen sein: erst zuhören und Informationen einholen, dann eigene Betroffenheit äußern."],
+[11,"Lösungsorientierte Gesprächsführung","Setzt an Ressourcen und Ausnahmen vom Problem an. Im Zwangskontext begrenzt."],
+[11,"Motivierende Gesprächsführung","Für wenig änderungsmotivierte Menschen. Baut Motive systematisch auf (Miller/Rollnick)."]
+];
+
+/* ---------- Zustand ---------- */
+const KEY="m10-lernwerkstatt-v1";
+let S={done:{},known:{},best:{},tab:"path"};
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const stName=id=>ST.find(s=>s.id===id).t;
+
+/* ---------- Fortschritt ---------- */
+function progress(){
+  const d=ST.filter(s=>S.done[s.id]).length;
+  const known=Object.keys(S.known).length;
+  $("#p-text").textContent=d+" von "+ST.length+" Stationen abgeschlossen";
+  $("#p-extra").textContent=known+" von "+CD.length+" Karten gewusst";
+  $("#p-bar").style.width=Math.round(d/ST.length*100)+"%";
+}
+
+
+/* ---------- Lernpfad ---------- */
+function blockHTML(b){
+  const h=b.h?"<h3>"+b.h+"</h3>":"";
+  switch(b.k){
+    case "p":return '<div class="blk">'+h+"<p>"+b.t+"</p></div>";
+    case "ul":return '<div class="blk">'+h+"<ul>"+b.i.map(x=>"<li>"+x+"</li>").join("")+"</ul></div>";
+    case "ol":return '<div class="blk">'+h+"<ol>"+b.i.map(x=>"<li>"+x+"</li>").join("")+"</ol></div>";
+    case "grid":return '<div class="blk">'+h+'<div class="grid">'+b.i.map(x=>'<div class="gc"><b>'+x[0]+"</b><span>"+x[1]+"</span></div>").join("")+"</div></div>";
+    case "table":return '<div class="blk">'+h+'<div class="tw"><table><thead><tr>'+b.c.map(c=>"<th>"+c+"</th>").join("")+"</tr></thead><tbody>"+b.r.map(r=>"<tr>"+r.map(c=>"<td>"+c+"</td>").join("")+"</tr>").join("")+"</tbody></table></div></div>";
+    case "note":return '<div class="blk"><div class="note">'+b.t+"</div></div>";
+    case "quote":return '<div class="blk"><blockquote class="quote">„'+b.t+"“<small>"+b.by+"</small></blockquote></div>";
+  }return "";
+}
+function renderPath(){
+  const firstOpen=ST.find(s=>!S.done[s.id]);
+  const openIds=$$(".st.open").map(e=>+e.dataset.id);
+  $("#path").innerHTML=ST.map(s=>{
+    const cls=["st"];if(S.done[s.id])cls.push("done");else if(firstOpen&&firstOpen.id===s.id)cls.push("next");
+    if(openIds.includes(s.id))cls.push("open");
+    const chips=s.src.split("").map(c=>'<span class="chip '+SCLS[c]+'">'+SRC[c]+"</span>").join("");
+    const nq=QZ.filter(q=>q[0]===s.id).length, nc=CD.filter(c=>c[0]===s.id).length;
+    return '<li class="'+cls.join(" ")+'" data-id="'+s.id+'"><div class="node">'+(S.done[s.id]?"✓":s.id)+'</div>'+
+    '<button class="st-head" data-act="toggle" aria-expanded="'+openIds.includes(s.id)+'"><div class="chips">'+chips+'<span class="chip state">'+(S.done[s.id]?"abgeschlossen":(cls.includes("next")?"als Nächstes":"offen"))+'</span></div><h2>'+s.t+'</h2><p>'+s.teaser+'</p></button>'+
+    '<div class="st-body">'+s.b.map(blockHTML).join("")+
+    '<div class="acts"><button class="btn '+(S.done[s.id]?"ok":"pri")+'" data-act="done">'+(S.done[s.id]?"✓ Abgeschlossen (zurücknehmen)":"Als abgeschlossen markieren")+'</button>'+
+    '<button class="btn" data-act="quiz">Quiz zu diesem Thema ('+nq+')</button><button class="btn" data-act="cards">Karten dazu ('+nc+')</button></div></div></li>';
+  }).join("");
+}
+$("#path").addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const li=b.closest(".st"),id=+li.dataset.id;
+  if(b.dataset.act==="toggle"){const o=li.classList.toggle("open");b.setAttribute("aria-expanded",o)}
+  else if(b.dataset.act==="done"){S.done[id]=!S.done[id];if(!S.done[id])delete S.done[id];save();renderPath();progress();$(".st[data-id='"+id+"']").classList.add("open")}
+  else if(b.dataset.act==="quiz"){$("#q-topic").value=id;setTab("quiz");startQuiz()}
+  else if(b.dataset.act==="cards"){$("#c-topic").value=id;setTab("cards");buildDeck()}
+});
+
+/* ---------- Tabs ---------- */
+function setTab(t){
+  S.tab=t;save();
+  $$(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
+  $(".bubble").hidden=t!=="path";
+  ["path","quiz","cards"].forEach(v=>$("#v-"+v).hidden=v!==t);
+  window.scrollTo({top:0});
+}
+$$(".tab").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
+
+/* ---------- Themenwahl ---------- */
+function fillTopics(sel,list,idx){
+  sel.innerHTML='<option value="0">Alle Themen ('+list.length+')</option>'+ST.map(s=>'<option value="'+s.id+'">'+s.id+". "+esc(s.t)+" ("+list.filter(x=>x[0]===s.id).length+")</option>").join("");
+}
+fillTopics($("#q-topic"),QZ);fillTopics($("#c-topic"),CD);
+
+/* ---------- Quiz ---------- */
+let QN=10,Q=null;
+$("#q-count").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;QN=+b.dataset.n;$$("#q-count button").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+$("#q-start").addEventListener("click",startQuiz);
+function startQuiz(){
+  const t=+$("#q-topic").value;
+  let pool=QZ.filter(q=>!t||q[0]===t);
+  pool=shuffle(pool).slice(0,QN);
+  Q={t,list:pool,i:0,score:0,wrong:[],log:[],done:false};
+  showQ();
+}
+function showQ(){
+  const a=$("#q-area");
+  if(Q.i>=Q.list.length){return showResult()}
+  const q=Q.list[Q.i];
+  const opts=shuffle([{t:q[2],ok:true}].concat(q[3].map(t=>({t,ok:false}))));
+  Q.cur={q,opts,answered:false};
+  a.innerHTML='<div class="panel"><div class="qmeta"><span>Frage '+(Q.i+1)+" von "+Q.list.length+'</span><span>'+esc(stName(q[0]))+'</span></div><div class="bar"><i style="width:'+Math.round(Q.i/Q.list.length*100)+'%"></i></div>'+
+  '<div class="qtext" id="qt">'+esc(q[1])+'</div><div class="opts" role="group" aria-labelledby="qt">'+opts.map((o,i)=>'<button class="opt" data-i="'+i+'"><span class="l">'+"ABCD"[i]+"</span><span>"+esc(o.t)+"</span></button>").join("")+'</div><div id="q-fb" aria-live="polite"></div></div>';
+}
+function srcOf(id){const s=ST.find(x=>x.id===id);return s?s.src.split("").map(c=>SRC[c]).join(", "):""}
+function verdict(pct){return pct>=90?"Hervorragend – sehr sicher im Stoff.":pct>=75?"Gut – die Grundlagen sitzen, einzelne Lücken schließen.":pct>=50?"Solide Basis – wiederhole die markierten Themen.":"Noch unsicher – arbeite die markierten Stationen im Lernpfad durch."}
+$("#q-area").addEventListener("click",e=>{
+  const o=e.target.closest(".opt");
+  if(o&&Q&&Q.cur&&!Q.cur.answered){
+    const c=Q.cur;c.answered=true;
+    const pick=c.opts[+o.dataset.i];
+    $$(".opt").forEach((b,i)=>{b.disabled=true;if(c.opts[i].ok)b.classList.add("right")});
+    if(pick.ok){Q.score++}else{o.classList.add("wrong");Q.wrong.push(c.q)}
+    Q.log.push({q:c.q,picked:pick.t,ok:pick.ok});
+    const last=Q.i===Q.list.length-1,done=Q.i+1;
+    $("#q-fb").innerHTML='<div class="fb '+(pick.ok?"good":"bad")+'"><b>'+(pick.ok?"✓ Richtig":"✗ Nicht ganz")+'</b>'+
+    '<div class="ev"><div><span>Deine Antwort</span>'+esc(pick.t)+'</div>'+(pick.ok?"":'<div><span>Richtig ist</span>'+esc(c.q[2])+'</div>')+
+    '<div><span>Auswertung laut Skript</span>'+esc(c.q[4])+'</div>'+
+    '<div><span>Fundstelle</span>Station '+c.q[0]+' – '+esc(stName(c.q[0]))+' ('+esc(srcOf(c.q[0]))+')</div></div>'+
+    '<div class="run">Zwischenstand: '+Q.score+' von '+done+' richtig ('+Math.round(Q.score/done*100)+' %)</div></div>'+
+    '<div class="acts" style="border:0;padding-top:0"><button class="btn pri" id="q-next">'+(last?"Gesamtauswertung ansehen":"Nächste Frage")+"</button></div>";
+    $("#q-next").focus();
+  }
+  if(e.target.closest("#q-next")){Q.i++;showQ()}
+  if(e.target.closest("#q-again"))startQuiz();
+  if(e.target.closest("#q-wrongonly")){Q={t:Q.t,list:shuffle(Q.wrong),i:0,score:0,wrong:[],log:[]};showQ()}
+  const g=e.target.closest("[data-goto]");
+  if(g){const id=+g.dataset.goto;setTab("path");$$(".st").forEach(x=>x.classList.toggle("open",+x.dataset.id===id));const el=$(".st[data-id='"+id+"']");if(el)el.scrollIntoView({block:"start"})}
+});
+function showResult(){
+  const n=Q.list.length,pct=Math.round(Q.score/n*100);
+  const key=Q.t||0;
+  if(!S.best[key]||pct>S.best[key]){S.best[key]=pct;save()}
+  // je Station
+  const by={};Q.log.forEach(l=>{const id=l.q[0];(by[id]=by[id]||{n:0,ok:0});by[id].n++;if(l.ok)by[id].ok++});
+  const ids=Object.keys(by).map(Number).sort((a,b)=>a-b);
+  const rows=ids.map(id=>{const r=by[id],p=Math.round(r.ok/r.n*100);return '<div class="srow"><div class="sn"><b>'+id+'. '+esc(stName(id))+'</b><span>'+r.ok+' von '+r.n+' richtig · '+p+' %</span></div><div class="bar"><i style="width:'+p+'%"></i></div>'+(p<100?'<button class="btn sm" data-goto="'+id+'">Im Lernpfad nachlesen</button>':"")+'</div>'});
+  const strong=ids.filter(id=>by[id].ok===by[id].n).map(id=>id+". "+stName(id));
+  const weak=ids.filter(id=>by[id].ok<by[id].n).sort((a,b)=>by[a].ok/by[a].n-by[b].ok/by[b].n).map(id=>id+". "+stName(id));
+  const det=Q.log.map((l,i)=>'<details class="rv '+(l.ok?"good":"bad")+'"'+(l.ok?"":" open")+'><summary><span class="mk">'+(l.ok?"✓":"✗")+'</span><span>'+(i+1)+". "+esc(l.q[1])+'</span></summary><div class="ev">'+
+    '<div><span>Deine Antwort</span>'+esc(l.picked)+'</div>'+(l.ok?"":'<div><span>Richtig ist</span>'+esc(l.q[2])+'</div>')+
+    '<div><span>Erklärung laut Skript</span>'+esc(l.q[4])+'</div>'+
+    '<div><span>Fundstelle</span>Station '+l.q[0]+' – '+esc(stName(l.q[0]))+' ('+esc(srcOf(l.q[0]))+') <button class="btn sm" data-goto="'+l.q[0]+'">Zur Station</button></div></div></details>').join("");
+  $("#q-area").innerHTML='<div class="panel"><div class="qmeta"><span>Gesamtauswertung</span><span>Bestwert in diesem Thema: '+S.best[key]+' %</span></div>'+
+  '<div class="score">'+Q.score+" / "+n+' <small>('+pct+' %)</small></div><p><b>'+verdict(pct)+'</b></p>'+
+  '<p>Du hast '+Q.score+' von '+n+' Fragen richtig beantwortet'+(Q.wrong.length?' und '+Q.wrong.length+' falsch.':'.')+'</p>'+
+  '<h3 style="margin-top:18px">Ergebnis nach Themen</h3><div class="srows">'+rows.join("")+'</div>'+
+  (strong.length?'<p class="sum"><b>Stärken:</b> '+esc(strong.join("; "))+'</p>':"")+
+  (weak.length?'<p class="sum"><b>Empfehlung:</b> Wiederhole zuerst '+esc(weak.slice(0,3).join("; "))+'. Lies die Station im Lernpfad und übe danach mit „Nur falsche Fragen üben“.</p>':'<p class="sum"><b>Empfehlung:</b> Alles richtig. Wähle als Nächstes ein anderes Thema oder mehr Fragen.</p>')+
+  '<h3 style="margin-top:18px">Alle Fragen ausführlich erklärt</h3><p class="lead" style="margin:4px 0 10px">Falsch beantwortete Fragen sind aufgeklappt. Die Erklärungen folgen den Skripten und den Zusatzmaterialien.</p><div class="rvs">'+det+'</div>'+
+  '<div class="acts"><button class="btn pri" id="q-again">Neue Runde</button>'+(Q.wrong.length?'<button class="btn" id="q-wrongonly">Nur falsche Fragen üben</button>':"")+"</div></div>";
+  window.scrollTo({top:$("#v-quiz").offsetTop,behavior:"smooth"});
+}
+
+/* ---------- Karten ---------- */
+let C={deck:[],i:0,flip:false},CM="all";
+$("#c-topic").addEventListener("change",buildDeck);
+$("#c-mode").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;CM=b.dataset.m;$$("#c-mode button").forEach(x=>x.setAttribute("aria-pressed",x===b));buildDeck()});
+$("#c-shuffle").addEventListener("click",()=>{C.deck=shuffle(C.deck);C.i=0;C.flip=false;drawCard()});
+function buildDeck(){
+  const t=+$("#c-topic").value;
+  C.deck=CD.map((c,i)=>({c,i})).filter(x=>(!t||x.c[0]===t)&&(CM==="all"||!S.known[x.i]));
+  C.i=0;C.flip=false;drawCard();
+}
+function drawCard(){
+  const a=$("#c-area");
+  if(!C.deck.length){a.innerHTML='<div class="panel empty">Keine offenen Karten in diesem Thema. Du hast alle gewusst.<div class="acts" style="justify-content:center;border:0"><button class="btn" id="c-reset">Fortschritt dieses Themas zurücksetzen</button></div></div>';return}
+  const d=C.deck[C.i],known=!!S.known[d.i];
+  a.innerHTML='<div class="qmeta"><span>Karte '+(C.i+1)+" von "+C.deck.length+"</span><span>"+esc(stName(d.c[0]))+(known?" · gewusst":"")+'</span></div>'+
+  '<div class="stage"><button class="card'+(C.flip?" flip":"")+'" id="card" aria-label="Karte umdrehen"><span class="face front"><small>Frage</small><p>'+esc(d.c[1])+'</p></span><span class="face back"><small>Antwort</small><p>'+esc(d.c[2])+"</p></span></button></div>"+
+  '<div class="cc"><button class="btn" data-c="prev" aria-label="Vorherige Karte">← Zurück</button><div class="mid"><button class="btn" data-c="again">Nochmal</button><button class="btn pri" data-c="know">Gewusst</button></div><button class="btn" data-c="next" aria-label="Nächste Karte">Weiter →</button></div>'+
+  '<p class="hint">Tastatur: Pfeil links und rechts blättern, Leertaste dreht um.</p>';
+}
+$("#c-area").addEventListener("click",e=>{
+  if(e.target.closest("#card")){C.flip=!C.flip;$("#card").classList.toggle("flip",C.flip);return}
+  if(e.target.closest("#c-reset")){const t=+$("#c-topic").value;CD.forEach((c,i)=>{if(!t||c[0]===t)delete S.known[i]});save();progress();buildDeck();return}
+  const b=e.target.closest("[data-c]");if(!b)return;
+  const d=C.deck[C.i],m=b.dataset.c;
+  if(m==="know"){S.known[d.i]=1;save();progress();if(CM==="open"){C.deck.splice(C.i,1);if(C.i>=C.deck.length)C.i=0}else C.i=(C.i+1)%C.deck.length}
+  else if(m==="again"){delete S.known[d.i];save();progress();C.i=(C.i+1)%C.deck.length}
+  else if(m==="next")C.i=(C.i+1)%C.deck.length;
+  else if(m==="prev")C.i=(C.i-1+C.deck.length)%C.deck.length;
+  C.flip=false;drawCard();
+});
+document.addEventListener("keydown",e=>{
+  if(S.tab!=="cards"||!C.deck.length||/SELECT|INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
+  if(e.key==="ArrowRight"){C.i=(C.i+1)%C.deck.length;C.flip=false;drawCard()}
+  else if(e.key==="ArrowLeft"){C.i=(C.i-1+C.deck.length)%C.deck.length;C.flip=false;drawCard()}
+  else if(e.key===" "&&document.activeElement.id!=="card"&&!document.activeElement.closest(".btn")){e.preventDefault();C.flip=!C.flip;$("#card").classList.toggle("flip",C.flip)}
+});
+
+/* ---------- Start ---------- */
+$("#q-area").innerHTML='<div class="panel empty">Wähle Thema und Länge, dann „Quiz starten“. Es gibt '+QZ.length+" Fragen zu allen "+ST.length+" Stationen.</div>";
+renderPath();progress();buildDeck();
+setTab(["path","quiz","cards"].includes(S.tab)?S.tab:"path");
+</script>
+
+<!--rechtstexte-->
+<div id="rt-footer-host"></div>
+<template id="rt-footer-tpl"><style>
+:host{display:block;all:initial}
+.bar{display:block;box-sizing:border-box;width:100%;margin:2.5rem 0 0;padding:.9rem 1rem 1.2rem;text-align:center;font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#8a8a8a}
+.bar button{all:unset;cursor:pointer;color:#8a8a8a;text-decoration:underline;text-underline-offset:2px;padding:.2rem .35rem;border-radius:4px}
+.bar button:hover,.bar button:focus-visible{color:#555}
+.bar button:focus-visible{outline:2px solid #888}
+dialog{box-sizing:border-box;width:min(720px,calc(100vw - 2rem));max-height:85vh;overflow:auto;border:1px solid #ccc;border-radius:10px;padding:1.2rem 1.4rem;background:#fff;color:#222;font:14px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+h2{margin:0 0 .6rem;font-size:1.25rem}h3{margin:1rem 0 .3rem;font-size:1rem}p{margin:.3rem 0}.st{color:#777;font-size:.85rem;margin-top:1rem}
+.x{position:sticky;top:0;float:right;background:#eee;color:#222;border:0;border-radius:6px;padding:.3rem .7rem;cursor:pointer;font:inherit}
+@media (prefers-color-scheme:dark){.bar,.bar button{color:#8d8d8d}dialog{background:#1f1f1f;color:#e6e6e6;border-color:#444}.x{background:#333;color:#eee}.st{color:#999}}
+</style>
+<div class="bar"><button type="button" data-open="imp">Impressum</button> · <button type="button" data-open="dat">Datenschutz</button></div>
+<dialog id="imp" aria-labelledby="imp-t"><button class="x" type="button" data-close>Schließen</button><h2 id="imp-t">Impressum</h2><h3>Angaben gemäß § 5 DDG</h3>
+<p>crosspublish media GmbH<br>Leipziger Str. 27<br>09648 Mittweida<br>Deutschland</p>
+<p>Vertreten durch den Geschäftsführer: Michael Ascheron</p>
+<h3>Kontakt</h3>
+<p>Telefon: +49 (0) 3727 9760<br>E-Mail: info@crosspublish.de</p>
+<h3>Register und Steuer</h3>
+<p>Registergericht: Amtsgericht Chemnitz, HRB 31759<br>Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: DE318536831</p>
+<h3>Verantwortlich für den Inhalt (§ 18 Abs. 2 MStV)</h3>
+<p>Michael Ascheron, Anschrift wie oben</p>
+<h3>Verbraucherstreitbeilegung</h3>
+<p>Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG). Die Angebote richten sich ausschließlich an Unternehmer im Sinne des § 14 BGB sowie an Teilnehmende von Fortbildungen zu Lernzwecken.</p>
+<h3>Haftung für Inhalte und Links</h3>
+<p>Die Inhalte dieser Seite dienen der Lernunterstützung und ersetzen keine Rechtsberatung. Für Inhalte externer Links sind ausschließlich deren Betreiber verantwortlich; zum Zeitpunkt der Verlinkung waren keine Rechtsverstöße erkennbar. Bei Bekanntwerden von Rechtsverletzungen entfernen wir entsprechende Links umgehend.</p>
+<h3>Urheberrecht</h3>
+<p>Eigene Inhalte unterliegen dem deutschen Urheberrecht. Gesetzestexte sind gemeinfrei (§ 5 UrhG); Inhalte Dritter (z. B. Wikipedia, Wikimedia Commons) bleiben unter deren jeweiligen Lizenzen.</p>
+<p class="st">Stand: Oktober 2026</p></dialog>
+<dialog id="dat" aria-labelledby="dat-t"><button class="x" type="button" data-close>Schließen</button><h2 id="dat-t">Datenschutzerklärung</h2><h3>1. Verantwortlicher</h3><p>Verantwortlich im Sinne der Datenschutz-Grundverordnung (DSGVO) ist die crosspublish media GmbH, Leipziger Str. 27, 09648 Mittweida, Deutschland, E-Mail: info@crosspublish.de. Anfragen zum Datenschutz richten Sie bitte an diese Adresse.</p>
+<h3>2. Hosting und Server-Logdateien</h3><p>Diese Seite wird bei Netlify, Inc., 512 2nd Street, Suite 200, San Francisco, CA 94107, USA, gehostet. Beim Aufruf verarbeitet der Hosting-Anbieter technisch notwendige Verbindungsdaten (IP-Adresse, Datum und Uhrzeit, aufgerufene Datei, Browser- und Betriebssysteminformationen, Referrer), um die Seite auszuliefern und die Sicherheit des Angebots zu gewährleisten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einem sicheren und stabilen Betrieb). Mit dem Anbieter besteht ein Auftragsverarbeitungsverhältnis nach Art. 28 DSGVO. Soweit Daten in die USA übermittelt werden, stützt sich die Übermittlung auf den Angemessenheitsbeschluss der EU-Kommission zum EU-U.S. Data Privacy Framework bzw. auf Standardvertragsklauseln (Art. 45, 46 DSGVO). Die Logdaten werden nach Ablauf der vom Anbieter festgelegten kurzen Fristen gelöscht.</p>
+<h3>3. Zugriffsschutz</h3><p>Der Zugriff auf diese Seite kann auf angemeldete Mitglieder eines Teams beschränkt sein. Bei der Anmeldung verarbeitet Netlify die dafür nötigen Kontodaten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.</p>
+<h3>4. Schriftarten</h3><p>Zur einheitlichen Darstellung lädt diese Seite Schriftarten von externen Servern: Google Fonts (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland, sowie Google LLC, USA). Dabei wird Ihre IP-Adresse an den jeweiligen Anbieter übermittelt, der daraus ableiten kann, dass die Seite aufgerufen wurde. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (einheitliche, ansprechende Darstellung). Eine Übermittlung in Drittländer stützt sich, soweit erforderlich, auf das EU-U.S. Data Privacy Framework bzw. Standardvertragsklauseln. Sie können dem Laden jederzeit widersprechen, etwa durch einen Schriftarten- oder Skriptblocker; die Seite wird dann mit Ersatzschriften angezeigt.</p>
+<h3>5. Lokale Speicherung im Browser</h3><p>Diese Seite speichert Einstellungen und Ihren Lernstand (z. B. gemerkte Antworten oder Filter) im lokalen Speicher Ihres Browsers (Local Storage). Die Daten verbleiben auf Ihrem Gerät und werden nicht an uns oder Dritte übertragen. Die Speicherung ist für die von Ihnen gewünschte Funktion erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG); die anschließende Verarbeitung beruht auf Art. 6 Abs. 1 lit. f DSGVO. Sie können die Daten jederzeit in den Browsereinstellungen löschen. Es werden keine Cookies zu Analyse- oder Werbezwecken gesetzt.</p>
+<h3>6. Keine Analyse, keine Werbung</h3><p>Wir setzen keine Webanalyse-, Tracking- oder Werbedienste ein und verarbeiten keine Kontaktformulare oder Newsletter-Daten über diese Seite.</p>
+<h3>7. Externe Links und Inhalte</h3><p>Diese Seite enthält Links zu externen Angeboten (z. B. Gesetzestexte, Wikipedia, Anbieterseiten). Beim Anklicken gelten die Datenschutzbestimmungen der jeweiligen Betreiber; auf deren Datenverarbeitung haben wir keinen Einfluss.</p>
+<h3>8. Ihre Rechte</h3><p>Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) sowie Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen (Art. 21 DSGVO). Eine erteilte Einwilligung können Sie jederzeit mit Wirkung für die Zukunft widerrufen (Art. 7 Abs. 3 DSGVO). Wenden Sie sich dazu an info@crosspublish.de. Außerdem haben Sie das Recht, sich bei einer Aufsichtsbehörde zu beschweren (Art. 77 DSGVO), z. B. beim Sächsischen Datenschutz- und Transparenzbeauftragten, Devrientstraße 5, 01067 Dresden.</p>
+<p class="st">Stand: Oktober 2026</p></dialog></template>
+<script>(function(){try{var h=document.getElementById('rt-footer-host'),t=document.getElementById('rt-footer-tpl');if(!h||!t)return;var r=h.attachShadow({mode:'open'});r.appendChild(t.content.cloneNode(true));r.addEventListener('click',function(e){var o=e.target.closest('[data-open]'),c=e.target.closest('[data-close]'),d=e.target.tagName==='DIALOG'?e.target:null;if(o){r.getElementById(o.dataset.open).showModal()}else if(c){c.closest('dialog').close()}else if(d){d.close()}})}catch(x){}})();</script>
+<!--/rechtstexte-->
