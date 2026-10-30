@@ -160,6 +160,24 @@ footer{margin-top:40px;color:var(--muted);font-size:.88rem;border-top:1px solid 
 @media (max-width:520px){.panel{padding:16px}.face{padding:18px}.face p{font-size:1.15rem}.tab{padding:7px 11px}}
 @media (prefers-reduced-motion:reduce){.card,.bar>i{transition:none}}
 [hidden]{display:none!important}
+/* Übungen */
+.exl{display:grid;gap:18px;margin-top:20px}
+.ex{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:16px;padding:18px 20px}
+.ex.done{border-left-color:var(--good)}
+.ex .kick{font-size:.8rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.ex h3{font-size:1.3rem;margin:4px 0 6px}
+.ex p{margin:6px 0}
+.ex h4{font-family:var(--f-display);font-size:1rem;margin:14px 0 4px}
+.ex ul,.ex ol{margin:4px 0 0;padding-left:1.25em}
+.ex li{margin:3px 0}
+.ex .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.ex .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.ex .btn{text-decoration:none}
+.ex-frame{margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg)}
+.ex-frame iframe{display:block;width:100%;height:78vh;min-height:520px;border:0}
+.ex-sec{font-size:1.15rem;margin-top:30px}
+.story{background:var(--note-bg);color:var(--note-ink);border-left:4px solid var(--note-line);border-radius:10px;padding:10px 14px;margin:8px 0}
+a.go{color:var(--accent);font-weight:600;cursor:pointer;text-decoration:underline}
 </style>
 
 <header class="top"><div class="wrap">
@@ -168,6 +186,7 @@ footer{margin-top:40px;color:var(--muted);font-size:.88rem;border-top:1px solid 
     <button class="tab" role="tab" id="t-path" data-tab="path" aria-selected="true">Lernpfad</button>
     <button class="tab" role="tab" id="t-quiz" data-tab="quiz" aria-selected="false">Quiz</button>
     <button class="tab" role="tab" id="t-cards" data-tab="cards" aria-selected="false">Karten</button>
+    <button class="tab" role="tab" id="t-ex" data-tab="ex" aria-selected="false">Übungen</button>
   </div>
 </div></header>
 
@@ -175,7 +194,7 @@ footer{margin-top:40px;color:var(--muted);font-size:.88rem;border-top:1px solid 
   <section class="hero">
     <div class="bubble">
       <h1>Grundlagen der Kommunikation und Praxistransfer</h1>
-      <p>Lernhilfe zum Sachkundelehrgang für berufliche Betreuer, aufgebaut aus den drei Skripten des Moduls und ergänzt um Literatur.</p>
+      <p>Lernhilfe zum Sachkundelehrgang für berufliche Betreuer, aufgebaut aus den drei Skripten des Moduls und ergänzt um Literatur, Gesprächsleitfäden und interaktive Übungen.</p>
     </div>
     <div class="prog">
       <div class="prog-row"><span id="p-text"></span><span id="p-extra"></span></div>
@@ -214,8 +233,15 @@ footer{margin-top:40px;color:var(--muted);font-size:.88rem;border-top:1px solid 
     <div id="c-area"></div>
   </section>
 
+  <!-- ÜBUNGEN -->
+  <section id="v-ex" aria-labelledby="t-ex" hidden>
+    <h2 class="sec">Übungen</h2>
+    <p class="lead">Drei interaktive Werkzeuge zur Selbstreflexion und zwei Übungen für die Gruppe. Eingaben in den Werkzeugen bleiben in deinem Browser. Sie sind Anregungen zur Reflexion und ersetzen weder Coaching noch Therapie.</p>
+    <div class="exl" id="ex-list"></div>
+  </section>
+
   <footer>
-    Die Seite fasst die Inhalte des Moduls zusammen und ersetzt die Unterlagen nicht. Der Lernfortschritt wird nur in diesem Browser gespeichert.
+    Die Seite fasst die Inhalte des Moduls zusammen und ersetzt die Unterlagen nicht. Die verlinkten Übungen sind Anregungen zur Reflexion und ersetzen weder Coaching noch Therapie. Der Lernfortschritt wird nur in diesem Browser gespeichert.
   </footer>
 </main>
 
@@ -449,6 +475,41 @@ const ST=[
   ["Systemisch im Zwangskontext","Gespräche, in denen Klienten nicht freiwillig teilnehmen."]]},
  {k:"ul",h:"Hauptaktivitäten in der Gesprächsführung",i:["Aufmerksam zuhören, hilfreich fragen","Gedanken prägnant und Gefühle treffend wiedergeben","Mit Schweigen umgehen, transparent strukturieren","Eigene Lösungsvorschläge entwickeln, Stellung nehmen (Zustimmung und Kritik)","Beziehungssensibel kommunizieren, explizite Metakommunikation","Mit Widerstand als Form der Kooperation arbeiten","Killerphrasen neutralisieren"]}
  ]}
+,{id:12,t:"Ergänzung: Gesprächsphasen für schwierige Betreuungsgespräche",src:"W",teaser:"Leitfaden zur Gesprächsvorbereitung, Phasenkonzepte für Zwangskontext, schlechte Nachrichten, Kritik und Krise, dazu Selbstevaluation und Kurzprotokoll.",
+ b:[
+ {k:"note",t:"<b>Hinweis:</b> Diese Station stammt aus den Arbeitsmaterialien zu Widulle, „Gesprächsführung in der Sozialen Arbeit“ (3. Aufl. 2020). Die Fälle dort stammen aus der Schweizer Sozialen Arbeit. Die Phasenkonzepte sind Orientierung und keine Patentrezepte."},
+ {k:"table",h:"Leitfaden zur Gesprächsvorbereitung",c:["Schritt","Leitfragen"],r:[
+  ["1. Kontext, Vorgeschichte, Anlass","Welchen Auftrag haben Institution und ich? Welche Vorgeschichte und wichtigen Ereignisse gibt es? Wer hat Gesprächsbedarf, was sind meine Motive, und welche negativen Folgen hat es, wenn kein Gespräch stattfindet?"],
+  ["2. Selbstklärung","Themen und Reihenfolge, Problem, Gesprächsziele, Wünsche und Forderungen (berechtigt?), mein inneres Team, meine Sicht auf die Beziehung und mögliche Beziehungsfallen, was ich von mir zeige oder nicht, meine Gefühle, Zweifel und Widerstände"],
+  ["3. Perspektivenwechsel","Sicht des Gegenübers auf das Thema, seine Gefühle, seine Sicht auf die Beziehung, seine Erwartungen und Ziele, besondere Sensibilitäten"],
+  ["4. Planung der Phasen","Gesprächsphasen festlegen, für jede Phase Arbeitsregeln und Selbstinstruktion notieren (was tun, was beachten?)"],
+  ["5. Rahmen klären","Zeitpunkt, Zeitaufwand, Raum, Störquellen ausschalten, Transparenz schaffen, Vorinformationen, Einladung formell oder informell"]]},
+ {k:"table",h:"Phasenkonzepte im Überblick",c:["Gesprächsform","Phasen","Besonders wichtig"],r:[
+  ["Zwangskontext","1 Einstieg (Rahmen, Rollen, Anlass) · 2 gemeinsame Problemdefinition · 3 Auftrags- und Zielklärung · 4 Aktivitäten klären · 5 Vereinbarungen · 6 Abschluss","Grund der Intervention deutlich machen, Rollen und Perspektiven trennen, Auflagen mitteilen, nur realistische Hoffnungen auf Aufhebung von Zwangsmaßnahmen machen, Vereinbarung schriftlich festhalten"],
+  ["Schlechte Nachricht","1 kurzer Einstieg · 2 Mitteilung · 3 Verarbeitung der Gefühle · 4 weitere Schritte · 5 Verabschiedung","Kurz, klar und ohne Umschweife mitteilen, nicht relativieren, Verursacher und Überbringer unterscheiden, Tröstungsversuche und Ratschläge unterlassen, Gefühle zulassen, Eskalationsrisiken beachten"],
+  ["Kritikgespräch","1 Einstieg · 2 Äußerung der Kritik · 3 Austausch über die Kritik · 4 Veränderungsvereinbarungen · 5 Abschluss","Thema Kritik offen nennen, Verhalten konkret benennen, Kritik nicht zurücknehmen, Gesichtsverlust beachten, bei Dissens den Dissens deutlich machen und die Verantwortung zurückgeben"],
+  ["Krisengespräch","1 Kontakt und Situationsklärung · 2 Problemanalyse · 3 Ziele entwickeln · 4 Problembearbeitung · 5 Zusammenfassung · 6 Abschluss","Klienten „abholen“, Emotionen aussprechen lassen, Coping- und Ressourcenanalyse, stark strukturieren, am Ende Notfallnummern und Erreichbarkeit vereinbaren"],
+  ["Motivierend","Phase 1 Motivation aufbauen (Kontakt, Anliegen explorieren, Change Talk) · Phase 2 Selbstverpflichtung stärken (Einleitung, Veränderungsplan, Selbstverpflichtung)","Dringlichkeitsskala, Entscheidungswaage, bedeutsame Werte, nächster Schritt: „Was wirst du tun?“"],
+  ["Lösungsorientiert","1 Einstieg · 2 aktuelle Situation · 3 Auftrag und Ziele · 4 Weg zur Lösung · 5 Unterbrechung · 6 Abschluss","Blick auf Ressourcen, lohnendes Ziel, nächster Schritt, Erfolgsindikatoren, Wertschätzung und Kompliment zum Schluss"]]},
+ {k:"ol",h:"Selbstevaluation eines Gesprächs, acht Fragen",i:["Situation beschreiben, die reflektiert werden soll","Eigene Anliegen, Motive und Gefühle benennen","Welche Handlungen waren konstruktiv und zielführend, und welche Arbeitsregeln stützen das?","Welche Handlungen waren reaktiv, ungünstig oder nicht zielführend, und welche Regeln begründen das?","Eigenes Handeln an bedeutsamen Arbeitsregeln der Kommunikation bewerten","Wie bewertete das Gegenüber das Gespräch?","Gesprächsergebnis an den Zielen aller Beteiligten messen: Was haben wir erreicht, was nicht?","Bezug zum Fachwissen herstellen"]},
+ {k:"ul",h:"Kurzprotokoll eines Gesprächs",i:["Kopf: Fall, Datum, Gesprächsteilnehmer, Gesprächsform, Ort und Zeit","Vorgeschichte und Verlauf seit dem letzten Gespräch, Gesprächsanlass und -bedarf","Protokoll: Verlauf, Ziele, Maßnahmen, Vereinbarungen, Wirkungen","Neue Informationen und neue Hypothesen","Evaluation: was war hilfreich, was wenig hilfreich, und wie geht es weiter?"]},
+ {k:"note",t:"<b>Einordnung für die Betreuung:</b> Zwangskontext, schlechte Nachricht und Krisengespräch begegnen Betreuern etwa bei gerichtlichen Entscheidungen, abgelehnten Anträgen oder akuter Selbst- und Fremdgefährdung. Die Wünsche der betreuten Person bleiben dabei Maßstab (§ 1821 BGB)."}
+ ]}
+,{id:13,t:"Literaturtipps und Selbsttests",src:"S",teaser:"Die Literaturliste aus Skript 3 zum Vertiefen, dazu der Hinweis zu Selbsttests und ein Buch der Referentin aus Teil 1.",
+ b:[
+ {k:"table",h:"Literaturtipps aus Skript 3",c:["Thema","Titel"],r:[
+  ["Kommunikation","Watzlawick: Menschliche Kommunikation. Formen, Störungen, Paradoxien (2016); Anleitung zum Unglücklichsein (2011)"],
+  ["Kommunikation","Schulz von Thun: Miteinander reden. Störungen und Klärungen, Stile, Werte und Persönlichkeitsentwicklung, das „innere Team“ (2019)"],
+  ["Aktives Zuhören","Nawroth: Aktives Zuhören nach Carl R. Rogers (2010)"],
+  ["Persönlichkeitsstrukturen","Riemann: Grundformen der Angst (44. Aufl. 2019); König: Charakter, Persönlichkeit und Persönlichkeitsstörung (2004) und Kleine psychoanalytische Charakterkunde (10. Aufl. 2010); von Schirach: Ich und Du und Müllers Kuh (2016)"],
+  ["Schwierige Klienten","Sachse: Persönlichkeitsstörungen verstehen. Zum Umgang mit schwierigen Klienten (10. Aufl. 2014)"],
+  ["Narzissmus","Bierhoff und Herner: Narzissmus, die Wiederkehr (2009); Haller: Die Narzissmusfalle (2013); Maaz: Die narzisstische Gesellschaft (4. Aufl. 2014)"],
+  ["Beziehungskompetenz","Damm und Kunstreich: Ungewissheit und Ohnmacht. Professionelle Beziehungskompetenz in der Sozialen Arbeit (2013)"],
+  ["Weiteres","Klein und Kresse: Psychologie-Vorsprung im Job (2005); Stange: Kommunikationsprobleme von Therapeuten, Patienten und Angehörigen (2009); Albert und Janus zur pränatalen Psychologie"]]},
+ {k:"note",t:"<b>Selbsttests:</b> Skript 3 verweist auf Online-Selbsttests, unter anderem zu Narzissmus, sozialer Phobie und Persönlichkeitsmerkmalen, sowie auf einen Selbsttest zu den „Grundformen der Angst“ (Riemann). Sie dienen der Selbst- und Fremdwahrnehmung und der Reflexion von Verhalten. Sie ersetzen keine Diagnose. Bei einem Verdacht ist professioneller Rat einzuholen."},
+ {k:"p",h:"Buch der Referentin aus Teil 1",t:"Sandra Bolz hat ein Buch zur beruflichen Betreuung veröffentlicht: <a href=\"https://www.bolz-betreut.de/buch/\" target=\"_blank\" rel=\"noopener\">bolz-betreut.de/buch</a>. Zur Ergänzung der Skripte siehe auch Station 11 (Widulle)."},
+ {k:"p",t:"Zum praktischen Üben siehe den Bereich <a class=\"go\" data-go=\"ex\">Übungen</a>."}
+ ]}
 ];
 
 /* Quiz: [Station, Frage, richtige Antwort, [falsche], Erklärung] */
@@ -534,7 +595,17 @@ const QZ=[
 [11,"Wie soll Offenheit im Gespräch nach Benien sein?","Selektiv authentisch",["Immer völlig ungefiltert","Möglichst verschlossen","Rein taktisch"],"Zum Beispiel erst zuhören und Informationen einholen, bevor man eigene Betroffenheit äußert."],
 [11,"Woran setzt die lösungsorientierte Gesprächsführung an?","An positiven Erfahrungen, Ressourcen und Ausnahmen vom Problem",["An einer genauen Analyse der Problemursachen","An Sanktionen und Konfrontation","An Diagnosen"],"Sie stärkt Entwicklungswünsche und Selbstwirksamkeit."],
 [11,"Für welche Gesprächspartner ist die motivierende Gesprächsführung besonders gedacht?","Für Menschen mit wenig Änderungsmotivation",["Für Gruppen mit Teamkonflikten","Für Kinder","Für Angehörigengespräche"],"Sie geht auf Miller und Rollnick zurück und baut Motive systematisch auf."],
-[11,"Welche Grenze nennt die Ergänzungsliteratur für die lösungsorientierte Gesprächsführung?","Im Zwangskontext stößt sie schnell an ihre Grenzen",["Sie funktioniert nur in Gruppen","Sie braucht ein Gutachten","Sie ist nur für Jugendliche geeignet"],"Strikte Ressourcenorientierung kann bei geringer Einsicht Verleugnung verstärken."]
+[11,"Welche Grenze nennt die Ergänzungsliteratur für die lösungsorientierte Gesprächsführung?","Im Zwangskontext stößt sie schnell an ihre Grenzen",["Sie funktioniert nur in Gruppen","Sie braucht ein Gutachten","Sie ist nur für Jugendliche geeignet"],"Strikte Ressourcenorientierung kann bei geringer Einsicht Verleugnung verstärken."],
+[12,"Wie soll eine schlechte Nachricht laut Phasenkonzept mitgeteilt werden?","Kurz, klar und ohne Umschweife",["Zuerst ausführlich relativieren","Mit tröstenden Ratschlägen einleiten","Möglichst offenlassen, um zu schonen"],"Die Nachricht wird kurz und klar mitgeteilt, nicht relativiert oder offengelassen. Tröstungsversuche und Ratschläge unterbleiben."],
+[12,"Was gilt im Zwangskontext für Hoffnungen auf Aufhebung von Zwangsmaßnahmen?","Es werden nur realistische Hoffnungen gemacht",["Die Aufhebung wird grundsätzlich in Aussicht gestellt","Das Thema wird ganz vermieden","Sie werden erst am Ende des Gesprächs erwähnt"],"In der Auftrags- und Zielklärung werden Auflagen mitgeteilt und nur realistische Hoffnungen gemacht."],
+[12,"Welche Phase folgt im Kritikgespräch auf die Äußerung der Kritik?","Der Austausch über die Kritik",["Der Gesprächsabschluss","Die Veränderungsvereinbarung","Die Problemdefinition"],"Phasen: Einstieg, Äußerung der Kritik, Austausch über die Kritik, Veränderungsvereinbarungen, Abschluss."],
+[12,"Was wird am Ende eines Krisengesprächs besonders vereinbart?","Notfallnummern und Erreichbarkeit für den Eskalationsfall",["Ein neues Gesprächsthema","Die Beendigung des Kontakts","Ein schriftliches Urteil"],"In der Zusammenfassung werden abschließende Vereinbarungen getroffen, besonders für den Eskalationsfall."],
+[12,"Welcher Schritt der Gesprächsvorbereitung verlangt, sich in das Gegenüber einzufühlen?","Der Perspektivenwechsel",["Die Rahmenklärung","Die Planung der Phasen","Die Klärung der Vorgeschichte"],"Beim Perspektivenwechsel geht es um Sicht, Gefühle, Erwartungen und Sensibilitäten des Gegenübers."],
+[12,"Woran wird das eigene Handeln in der Selbstevaluation eines Gesprächs gemessen?","An bedeutsamen Arbeitsregeln zu Kommunikation und Gespräch",["Am Eindruck der Vorgesetzten","Allein an der Gesprächsdauer","Nur am erreichten Ergebnis"],"Eigenes Handeln wird an Arbeitsregeln bewertet, ergänzt durch die Bewertung des Gegenübers und des Ergebnisses."],
+[12,"Welche zwei Phasen hat das Konzept der motivierenden Gesprächsführung?","Motivation zur Veränderung aufbauen, dann Selbstverpflichtung stärken",["Problem benennen, dann Lösung verordnen","Ziel setzen, dann Erfolg auswerten","Kontakt herstellen, dann Gespräch beenden"],"Phase 1 baut Motivation auf (u. a. Change Talk), Phase 2 stärkt die Selbstverpflichtung mit Veränderungsplan."],
+[13,"Wofür dienen die in Skript 3 genannten Selbsttests?","Für Selbst- und Fremdwahrnehmung, sie ersetzen keine Diagnose",["Für eine verbindliche Diagnose","Nur für ärztliches Personal","Zur Bewertung betreuter Personen"],"Die Tests dienen der Reflexion und stehen nicht unter Arztvorbehalt, ersetzen aber keine Diagnose."],
+[13,"Von wem stammt „Grundformen der Angst“?","Fritz Riemann",["Paul Watzlawick","Friedemann Schulz von Thun","Wolfgang Widulle"],"Riemann beschreibt die Grundformen der Angst, Karl König ergänzte das Konzept."],
+[13,"Welches Werk von Watzlawick steht auf der Literaturliste?","Menschliche Kommunikation",["Miteinander reden","Die Narzissmusfalle","Gesprächsführung in der Sozialen Arbeit"],"Genannt sind „Menschliche Kommunikation“ und „Anleitung zum Unglücklichsein“."]
 ];
 
 /* Karten: [Station, Vorderseite, Rückseite] */
@@ -633,12 +704,21 @@ const CD=[
 [11,"Doppelte Stimmigkeit","Das Gespräch muss zur Person und zur Situation passen (Schulz von Thun)."],
 [11,"Selektiv authentisch","Nicht ungeschützt offen sein: erst zuhören und Informationen einholen, dann eigene Betroffenheit äußern."],
 [11,"Lösungsorientierte Gesprächsführung","Setzt an Ressourcen und Ausnahmen vom Problem an. Im Zwangskontext begrenzt."],
-[11,"Motivierende Gesprächsführung","Für wenig änderungsmotivierte Menschen. Baut Motive systematisch auf (Miller/Rollnick)."]
+[11,"Motivierende Gesprächsführung","Für wenig änderungsmotivierte Menschen. Baut Motive systematisch auf (Miller/Rollnick)."],
+[12,"Schlechte Nachricht überbringen","Kurz, klar, ohne Umschweife; nicht relativieren; Verursacher und Überbringer unterscheiden; keine Tröstungsversuche oder Ratschläge; Gefühle zulassen."],
+[12,"Phasen im Zwangskontext","Einstieg, gemeinsame Problemdefinition, Auftrags- und Zielklärung, Aktivitäten klären, Vereinbarungen treffen, Abschluss."],
+[12,"Phasen des Kritikgesprächs","Einstieg, Äußerung der Kritik, Austausch über die Kritik, Veränderungsvereinbarungen, Abschluss."],
+[12,"Phasen des Krisengesprächs","Kontakt und Situationsklärung, Problemanalyse, Ziele, Problembearbeitung, Zusammenfassung, Abschluss. Am Ende Notfallnummern und Erreichbarkeit."],
+[12,"Fünf Schritte der Gesprächsvorbereitung","Kontext und Anlass, Selbstklärung, Perspektivenwechsel, Planung der Phasen, Rahmen klären."],
+[12,"Selbstevaluation eines Gesprächs","Situation, Motive und Gefühle, konstruktive und ungünstige Handlungen, Bewertung nach Arbeitsregeln, Sicht des Gegenübers, Ergebnis, Fachwissen."],
+[13,"Fritz Riemann","„Grundformen der Angst“, Grundlage der Persönlichkeitsstrukturen (ergänzt von Karl König)."],
+[13,"Schulz von Thun, Literaturtipp","„Miteinander reden“: Störungen und Klärungen, Stile, Werte, das innere Team."],
+[13,"Selbsttests im Skript","Dienen der Selbst- und Fremdwahrnehmung, ersetzen keine Diagnose; bei Verdacht professionellen Rat einholen."]
 ];
 
 /* ---------- Zustand ---------- */
 const KEY="m10-lernwerkstatt-v1";
-let S={done:{},known:{},best:{},tab:"path"};
+let S={done:{},known:{},best:{},exdone:{},tab:"path"};
 try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const $=(s,r=document)=>r.querySelector(s);
@@ -652,7 +732,7 @@ function progress(){
   const d=ST.filter(s=>S.done[s.id]).length;
   const known=Object.keys(S.known).length;
   $("#p-text").textContent=d+" von "+ST.length+" Stationen abgeschlossen";
-  $("#p-extra").textContent=known+" von "+CD.length+" Karten gewusst";
+  $("#p-extra").textContent=known+" von "+CD.length+" Karten gewusst · "+Object.keys(S.exdone||{}).length+" von "+EX.length+" Übungen";
   $("#p-bar").style.width=Math.round(d/ST.length*100)+"%";
 }
 
@@ -699,10 +779,95 @@ function setTab(t){
   S.tab=t;save();
   $$(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
   $(".bubble").hidden=t!=="path";
-  ["path","quiz","cards"].forEach(v=>$("#v-"+v).hidden=v!==t);
+  ["path","quiz","cards","ex"].forEach(v=>$("#v-"+v).hidden=v!==t);
   window.scrollTo({top:0});
 }
 $$(".tab").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
+
+
+/* ---------- Übungen ---------- */
+const EX=[
+{id:"bewusstheitsrad",type:"web",url:"https://bewusstheitsrad.netlify.app/",t:"Bewusstheitsrad",kick:"Interaktiv · zu Station 5 und 4",st:[5,4],
+ teaser:"Vom Autopiloten zurück zur Wahrnehmung: ein Ereignis in Wahrnehmung, Gedanken, Gefühle, Absichten und Handlung zerlegen.",
+ what:["Die Reise führt gegen den Uhrzeigersinn: Handlung, Absicht, Gefühle, Gedanken, Wahrnehmung.","Film-Test: Belegt die Wahrnehmung nur das, was man mit den Sinnen erfasst hat?","Bedürfnis-Kompass (angelehnt an gewaltfreie Kommunikation), Gefühle benennen, Reframing von Interpretationen","Am Ende steht eine Ich-Botschaft mit einem Mini-Schritt","Es gibt einen Gesprächsmodus mit Leitfragen und einen Gruppenmodus mit Sammelwand und Timer"],
+ ask:["Welcher Teil meiner Schilderung war Wahrnehmung, welcher Interpretation?","Wie sähe das Rad aus, wenn ich dieselbe Situation anders deute?"],
+ src:"Bewusstheitsrad nach Sherod Miller und Kolleginnen; Darstellung nach froschkoenige.ch"},
+{id:"kernquadrate",type:"web",url:"https://kernquadrate-entdecken.netlify.app/",t:"Kernquadrate entdecken",kick:"Interaktiv · zu Station 5",st:[5],
+ teaser:"Stärken, Fallen und Allergien: Kernqualität, Falle, positives Gegenteil und Allergie einmal im Kreis durchgehen.",
+ what:["Kernquadrat: Kernqualität, Falle („zu viel des Guten“), Herausforderung, Allergie","Fremdbild-Feedback: Wofür loben mich andere? (Johari-Fenster) macht blinde Flecken sichtbar","Frühwarnsystem: Signale erkennen, bevor die Stärke kippt","Bedürfnis-Check und Spiegel-Frage: Was nervt mich, und was will es mir zeigen?","Ein kleiner, konkreter Schritt mit Datum zum Schluss"],
+ ask:["In welche Falle gerät meine wichtigste Stärke unter Stress?","Welche Eigenschaft anderer löst bei mir eine Allergie aus, und was sagt das über meine Herausforderung?"],
+ src:"Kernquadrat-Modell; Liste der Kernqualitäten: studyflix.de"},
+{id:"wertekompass",type:"web",url:"https://werteliste-m10.netlify.app/",t:"Wertekompass",kick:"Interaktiv · zu Station 5, 7 und 9",st:[5,7,9],
+ teaser:"Eigene Werte klären: Kernwerte auswählen, in Wertefelder einordnen und mit Big Five und gewaltfreier Kommunikation verbinden.",
+ what:["Start mit einer Wertesammlung oder direkt mit Kernwerten","Einordnung nach der Theorie der universellen Basiswerte von Shalom H. Schwartz (zehn Wertefelder, zwei übergeordnete Dimensionen)","Big Five Test mit Aussagen aus dem frei verfügbaren IPIP","Verknüpfung mit gewaltfreier Kommunikation","Profile lassen sich speichern, exportieren und wieder laden"],
+ ask:["Welche drei Werte leiten mich in der Betreuung, und wo geraten sie mit den Wünschen der betreuten Person in Konflikt?","Welche Werte meines Gegenübers verstehe ich schlecht?"],
+ src:"Die Zuordnung der Begriffe zu den Wertefeldern ist eine inhaltliche Einschätzung, keine Messung. Kein diagnostisches Verfahren."},
+{id:"stillepost",type:"offline",t:"Stille Post",kick:"Gruppe · zu Station 1 und 2",st:[1,2],
+ teaser:"Eine kurze Geschichte wird flüsternd weitergegeben. Am Ende vergleicht die Gruppe Anfang und Ende.",
+ story:"Der Küchenjunge des internationalen Finanzdienstleistungsunternehmens „Pekunia“ mit dem Namen Friedrich Freudenstein wurde geknebelt und an eine Nudelmaschine gefesselt von seinem Vorgesetzten aufgefunden. Der Küchenjunge sagte aus, dass sechs ihm unbekannte Männer in langen Mänteln und mit schwarzen Hüten ihn überfallen und eine Psychodroge in den Zitronenpudding gemischt hätten. Dies habe zur Folge, dass bei allen Mitarbeitern, die den Zitronenpudding konsumierten, Bewusstseinsveränderungen erzeugt werden, die dazu führten, dass sie allen Kunden sofort einen Blankoscheck aushändigten. Es wird vermutet, dass die sechs Männer sich unter die Kunden mischen, um so das Finanzdienstleistungsunternehmen zu betrügen.",
+ what:["Eine Person liest die Geschichte einmal vor und gibt sie flüsternd an die nächste weiter, ohne dass andere mithören.","Die letzte Person erzählt die Geschichte laut, danach wird sie mit dem Original verglichen.","Auswertung: Was ging verloren, was kam hinzu, was wurde umgedeutet?"],
+ ask:["Wo wurden Details weggelassen, und wo wurden sie durch eigene Deutungen ersetzt?","Welche Regel nach Watzlawick wird sichtbar: Gesendet ist nicht gleich empfangen?","Welche Rolle spielten Sach- und Beziehungsebene, etwa Neugier, Unsicherheit oder der Wunsch, die Geschichte sinnvoll zu machen?","Wie lässt sich im Betreuungsalltag verhindern, dass Informationen auf dem Weg verzerrt werden (Nachfragen, Zusammenfassen, Schriftform)?"]},
+{id:"zugfahrt",type:"offline",t:"Kommunikationsexperiment zu zweit: Zugfahrt",kick:"Zu zweit · zu Station 2, 3 und 4",st:[2,3,4],
+ teaser:"Zehn Minuten Rollenspiel mit gegensätzlichen Wünschen: Gespräch suchen und Ruhe wollen.",
+ story:"Situation: „Ich sitze in einem ICE der Deutschen Bahn von München nach Hamburg.“ Person A hat sich auf die Zugfahrt gefreut und wünscht sich Kommunikation. Person B freut sich auf die Fahrt, will in Ruhe lesen und nicht gestört werden.",
+ what:["Zehn Minuten Rollenspiel in der Rolle A und B, danach Rollen tauschen oder beobachten lassen","Dritte Person beobachtet nonverbale Signale, Fragen, Ich-Botschaften und Appelle"],
+ ask:["Welche Seiten der Nachricht (Sache, Selbstoffenbarung, Beziehung, Appell) hat jede Person gesendet und gehört?","Wie lässt sich der eigene Wunsch als Ich-Botschaft äußern, ohne den anderen zu bedrängen oder abzuweisen?","Welche Fragen sind hilfreich: offene zum Einstieg, geschlossene zur Verbindlichkeit („Passt es Ihnen, wenn wir später weitersprechen?“)?","Wie gelingt ein Kompromiss, bei dem beide ihr Bedürfnis ernst genommen sehen?"]}
+];
+function goStation(id){
+  setTab("path");
+  const li=$(".st[data-id='"+id+"']");if(!li)return;
+  li.classList.add("open");const h=$(".st-head",li);if(h)h.setAttribute("aria-expanded","true");
+  li.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function renderEx(){
+  const web=EX.filter(x=>x.type==="web"),off=EX.filter(x=>x.type!=="web");
+  const card=x=>{
+    const sts=x.st.map(n=>'<button class="btn sm" data-act="st" data-st="'+n+'">Station '+n+'</button>').join("");
+    return '<article class="ex'+(S.exdone[x.id]?" done":"")+'" data-id="'+x.id+'"><div class="kick">'+esc(x.kick)+'</div><h3>'+esc(x.t)+'</h3><p>'+esc(x.teaser)+'</p>'+
+    (x.story?'<div class="story">'+esc(x.story)+'</div>':"")+
+    '<h4>'+(x.type==="web"?"Was die Übung enthält":"Ablauf")+'</h4><ul>'+x.what.map(w=>"<li>"+esc(w)+"</li>").join("")+'</ul>'+
+    '<h4>Fragen zur Auswertung</h4><ul>'+x.ask.map(w=>"<li>"+esc(w)+"</li>").join("")+'</ul>'+
+    (x.src?'<p class="hint">'+esc(x.src)+'</p>':"")+
+    '<div class="tags">'+sts+'</div>'+
+    '<div class="acts">'+(x.type==="web"?'<button class="btn pri" data-act="open">Hier öffnen</button><a class="btn" href="'+x.url+'" target="_blank" rel="noopener">In neuem Tab</a>':"")+
+    '<button class="btn '+(S.exdone[x.id]?"ok":"")+'" data-act="exdone">'+(S.exdone[x.id]?"✓ Erledigt (zurücknehmen)":"Als erledigt markieren")+'</button></div>'+
+    (x.type==="web"?'<div class="ex-frame" hidden></div>':"")+'</article>';
+  };
+  $("#ex-list").innerHTML='<h3 class="ex-sec">Interaktive Werkzeuge</h3>'+web.map(card).join("")+'<h3 class="ex-sec">Übungen für die Gruppe</h3>'+off.map(card).join("");
+}
+$("#ex-list").addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const art=b.closest(".ex"),id=art.dataset.id,x=EX.find(v=>v.id===id);
+  if(b.dataset.act==="st"){goStation(+b.dataset.st)}
+  else if(b.dataset.act==="exdone"){S.exdone[id]=!S.exdone[id];if(!S.exdone[id])delete S.exdone[id];save();
+    const open=$$(".ex-frame:not([hidden])",$("#ex-list")).map(f=>f.closest(".ex").dataset.id);
+    renderEx();progress();open.forEach(o=>{const a=$(".ex[data-id='"+o+"']");if(a)openFrame(a,EX.find(v=>v.id===o))})}
+  else if(b.dataset.act==="open"){
+    const f=$(".ex-frame",art);
+    if(f.hidden){openFrame(art,x)}else{f.hidden=true;b.textContent="Hier öffnen"}
+  }
+});
+function openFrame(art,x){
+  const f=$(".ex-frame",art),b=$("[data-act='open']",art);
+  if(!f.firstChild){
+    const i=document.createElement("iframe");i.src=x.url;i.title=x.t;i.loading="lazy";
+    i.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups");
+    f.appendChild(i);
+  }
+  f.hidden=false;b.textContent="Übung schließen";
+}
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-go]");if(!g)return;
+  if(g.dataset.go==="ex"){setTab("ex");$("#v-ex").scrollIntoView({block:"start"})}
+  else if(g.dataset.go.startsWith("ex:")){setTab("ex");const a=$(".ex[data-id='"+g.dataset.go.slice(3)+"']");if(a)a.scrollIntoView({behavior:"smooth",block:"start"})}
+});
+/* Verweise von den Stationen auf passende Übungen */
+const link=(id,t)=>'<a class="go" data-go="ex:'+id+'">'+t+'</a>';
+ST.find(s=>s.id===1).b.push({k:"note",t:"<b>Zum Üben:</b> "+link("stillepost","Stille Post")+" und das "+link("zugfahrt","Kommunikationsexperiment zu zweit")+"."});
+ST.find(s=>s.id===4).b.push({k:"note",t:"<b>Zum Üben:</b> Das "+link("bewusstheitsrad","Bewusstheitsrad")+" endet in einer Ich-Botschaft, das "+link("zugfahrt","Kommunikationsexperiment")+" lässt sich damit auswerten."});
+ST.find(s=>s.id===5).b.push({k:"note",t:"<b>Zum Üben:</b> "+link("bewusstheitsrad","Bewusstheitsrad")+", "+link("kernquadrate","Kernquadrate entdecken")+" und "+link("wertekompass","Wertekompass")+" setzen die Selbstreflexion dieser Station interaktiv um."});
+ST.find(s=>s.id===7).b.push({k:"note",t:"<b>Zum Üben:</b> Der "+link("wertekompass","Wertekompass")+" hilft, die eigene Haltung und mögliche Wertekonflikte mit der betreuten Person zu klären."});
+ST.find(s=>s.id===9).b.push({k:"note",t:"<b>Zum Üben:</b> Der "+link("wertekompass","Wertekompass")+" macht eigene Werte sichtbar, eine Voraussetzung für diversitätssensible Haltung."});
 
 /* ---------- Themenwahl ---------- */
 function fillTopics(sel,list,idx){
@@ -820,7 +985,8 @@ document.addEventListener("keydown",e=>{
 /* ---------- Start ---------- */
 $("#q-area").innerHTML='<div class="panel empty">Wähle Thema und Länge, dann „Quiz starten“. Es gibt '+QZ.length+" Fragen zu allen "+ST.length+" Stationen.</div>";
 renderPath();progress();buildDeck();
-setTab(["path","quiz","cards"].includes(S.tab)?S.tab:"path");
+renderEx();progress();
+setTab(["path","quiz","cards","ex"].includes(S.tab)?S.tab:"path");
 </script>
 
 <!--rechtstexte-->
